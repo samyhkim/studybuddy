@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
-
-const dbConnect = () => {
+const dbFunc = () => {
   mongoose.Promise = global.Promise;
   mongoose
     .connect("mongodb://localhost:27017/sb-cli", {
@@ -10,4 +9,4 @@ const dbConnect = () => {
     .catch((err) => console.log(err));
 };
 
-module.exports = { dbConnect };
+module.exports = { dbFunc };

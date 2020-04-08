@@ -1,11 +1,16 @@
-const db = require("../config/db");
+#!/usr/bin/env node
+
+// db not closing properly
+
+const { dbConnect } = require("../../config/db");
 const inquirer = require("inquirer");
-const Problem = require("../models/problems");
-const { mainMenu } = require("../index");
+const Problem = require("../../models/problems");
+const mongoose = require("mongoose");
 
 const retrieveProblem = async () => {
+  dbConnect();
   const mongo_promise = await Problem.aggregate([{ $sample: { size: 1 } }]);
-  db.connection.close();
+  mongoose.connection.close();
   //   console.log(mongo_promise);
   inquirer
     .prompt([
@@ -30,11 +35,14 @@ const retrieveProblem = async () => {
 
 // allow to traverse through list and start from any
 const viewProblems = async () => {
+  dbConnect();
   const mongo_promise = await Problem.find();
-  db.connection.close();
+  mongoose.connection.close();
+
   mongo_promise.forEach((problem) => {
     console.log(problem.title + " : " + problem.prompt);
   });
+
   problemHandler();
 };
 
@@ -46,34 +54,35 @@ const addQuestions = [
   {
     type: "input",
     name: "title",
-    message: "Problem title.",
+    message: "Problem title?",
   },
   {
     type: "input",
     name: "prompt",
-    message: "Problem prompt",
+    message: "Problem prompt?",
   },
 ];
 
-// create problem - fix to async await!
-const addProblem = () => {
-  inquirer.prompt(addQuestions).then((answers) => {
-    Problem.create(answers).then((mongo_promise) => {
-      console.log("New Problem Added");
-      console.log(mongo_promise.title);
-      console.log(mongo_promise.prompt);
-      db.connection.close();
-    });
-    problemHandler();
-  });
+const addProblem = async () => {
+  dbConnect();
+  const answers = await inquirer.prompt(addQuestions);
+  const mongo_promise = await Problem.create(answers);
+  mongoose.connection.close();
+
+  console.log("New Problem Added");
+  console.log(mongo_promise.title);
+  console.log(mongo_promise.prompt);
+
+  problemHandler();
 };
 
 // fix mongo remove
 // ask to confirm
 const removeProblem = async () => {
+  dbConnect();
   const mongo_promise = await Problem.find();
   problems = [];
-  db.connection.close();
+  // mongoose.connection.close();
   mongo_promise.forEach((problem) => {
     problems.push(problem.title);
   });
@@ -89,9 +98,28 @@ const removeProblem = async () => {
     .then((answer) => {
       console.log(answer);
       Problem.remove({ _title: answer.title });
-      db.connection.close();
+      mongoose.connection.close();
     });
 };
+
+// fix back - maybe async from index?
+function problemHandler() {
+  inquirer.prompt(problemMenu).then((answer) => {
+    if (answer.menuOptions == "Start") {
+      retrieveProblem();
+    } else if (answer.menuOptions == "View All") {
+      viewProblems();
+    } else if (answer.menuOptions == "Add") {
+      addProblem();
+    } else if (answer.menuOptions == "Remove") {
+      removeProblem();
+    } else if (answer.menuOptions == "< Main Menu") {
+      console.log(answer);
+    } else if (answer.menuOptions == "Exit") {
+      return;
+    }
+  });
+}
 
 const problemMenu = {
   type: "list",
@@ -100,28 +128,4 @@ const problemMenu = {
   choices: ["Start", "View All", "Add", "Remove", "< Main Menu", "Exit"],
 };
 
-function problemHandler() {
-  debugger;
-  db.connection.close();
-  inquirer
-    .prompt(problemMenu)
-    .then((answer) => {
-      console.log(answer);
-      if (answer.menuOptions == "Start") {
-        retrieveProblem();
-      } else if (answer.menuOptions == "View All") {
-        viewProblems();
-      } else if (answer.menuOptions == "Add") {
-        addProblem();
-      } else if (answer.menuOptions == "Remove") {
-        removeProblem();
-      } else if (answer.menuOptions == "Exit") {
-        console.log(JSON.stringify(answer, null, "  "));
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-}
-
-module.exports = { problemHandler, addProblem };
+module.exports = { problemHandler };
