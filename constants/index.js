@@ -2,7 +2,7 @@ const mainMenu = {
   type: "list",
   name: "menuOptions",
   message: "Welcome to StudyBuddy.",
-  choices: ["💡 Problems", "📚 Decks", "Exit"],
+  choices: ["📚 Decks", "💡 Problems", "Exit"],
 };
 
 module.exports = { mainMenu };

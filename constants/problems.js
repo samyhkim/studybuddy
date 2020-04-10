@@ -1,11 +1,5 @@
 const chalk = require("chalk");
 
-/*
-TODO:
-colors
-emojis
-*/
-
 const problemMenu = {
   type: "list",
   name: "menuOptions",
