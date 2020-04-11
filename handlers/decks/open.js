@@ -45,7 +45,6 @@ const addProblem = async (deck) => {
   if (answer.again) {
     addProblem(deck);
   }
-
   openHandler(deck);
 };
 

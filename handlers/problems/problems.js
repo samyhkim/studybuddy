@@ -13,7 +13,6 @@ const {
   addQuestions,
   addSolution,
 } = require("../../constants/problems/problems");
-// const { studyHandler } = require("./study");
 const { mainHandler } = require("../index");
 
 /*
@@ -101,6 +100,6 @@ const problemHandler = async () => {
   }
 };
 
-module.exports = { problemHandler, startProblem };
+module.exports = { problemHandler };
 
 const { studyHandler } = require("./study");
