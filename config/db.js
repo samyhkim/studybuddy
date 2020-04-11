@@ -69,10 +69,10 @@ const addDeckToProblem = async (problemId, deckId) => {
   return mongo_promise;
 };
 
-// const createJoin = async (deckId, problemId) => {
-//   addProblemToDeck(deckId, problemId);
-//   addDeckToProblem(problemId, deckId);
-// };
+const createJoin = async (deckId, problemId) => {
+  await addProblemToDeck(deckId, problemId);
+  await addDeckToProblem(problemId, deckId);
+};
 
 // READ
 const list = async (type) => {
@@ -132,6 +132,18 @@ const getRandom = async () => {
   return mongo_promise;
 };
 
+const getDeckWithProblem = async (deckId) => {
+  await dbConnect();
+  const mongo_promise = await Deck.findById(deckId).populate("problems");
+  await dbClose();
+  const results = [];
+  const problems = mongo_promise.problems;
+  problems.forEach((result) => {
+    results.push(result.title);
+  });
+  return results;
+};
+
 // DELETE
 const destroy = async (title, type) => {
   await dbConnect();
@@ -149,16 +161,55 @@ const destroy = async (title, type) => {
   return mongo_promise;
 };
 
+const removeProblemFromDeck = async (deckId, problemId) => {
+  await dbConnect();
+  const mongo_promise = await Deck.findByIdAndUpdate(
+    deckId,
+    {
+      $pull: {
+        problems: problemId,
+      },
+    },
+    {
+      new: true,
+      useFindAndModify: false,
+    }
+  );
+  await dbClose();
+  return mongo_promise;
+};
+
+const removeDeckFromProblem = async (problemId, deckId) => {
+  await dbConnect();
+  const mongo_promise = await Problem.findByIdAndUpdate(
+    problemId,
+    {
+      $pull: {
+        decks: deckId,
+      },
+    },
+    {
+      new: true,
+      useFindAndModify: false,
+    }
+  );
+  await dbClose();
+  return mongo_promise;
+};
+
+const removeJoin = async (deckId, problemId) => {
+  await removeProblemFromDeck(deckId, problemId);
+  await removeDeckFromProblem(problemId, deckId);
+};
+
 module.exports = {
-  dbConnect,
   create,
-  addProblemToDeck,
-  // addDeckToProblem,
-  // createJoin,
+  createJoin,
   list,
   retrieve,
   getThreeTitles,
-  getThreeRefactor,
   getRandom,
+  getDeckWithProblem,
   destroy,
+  removeJoin,
 };

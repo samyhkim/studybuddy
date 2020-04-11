@@ -53,9 +53,7 @@ const viewDecks = async () => {
   const deck = await retrieve(answer.title, "Deck");
   console.log(chalk.bold.yellow(deck.title));
   console.log(chalk.black.bgWhite(deck.description));
-  console.log(10);
   deckHandler();
-  console.log(11);
 };
 
 const removeDeck = async () => {
@@ -98,9 +96,7 @@ const playground = async () => {
 };
 
 const deckHandler = async () => {
-  console.log(1);
   const menu = await deckMenu();
-  console.log(9);
   // console.log(menu);
   const answer = await inquirer.prompt(menu);
   // const answer = await inquirer.prompt(deckMenu); // try creating getDeckMenu()

@@ -8,9 +8,7 @@ const { getThreeTitles } = require("../config/db");
 // };
 
 const deckMenu = async () => {
-  console.log(2);
   const titles = await getThreeTitles();
-  console.log(8);
   const menu = titles.concat(["View All", "Add", "Remove", "Main Menu"]);
   return {
     type: "list",
