@@ -4,7 +4,7 @@ const problemMenu = {
   type: "list",
   name: "menuOptions",
   message: chalk.green.bold("Problems"),
-  choices: ["Start", "View All", "Add", "Remove", "Main Menu", "Exit"],
+  choices: ["Start", "View All", "Add", "Remove", "Main Menu"],
 };
 
 const workMenu = {

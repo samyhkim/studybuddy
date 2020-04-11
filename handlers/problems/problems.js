@@ -1,13 +1,20 @@
 #!/usr/bin/env node
 const inquirer = require("inquirer");
 const chalk = require("chalk");
-const { create, list, retrieve, getRandom, destroy } = require("../config/db");
+const {
+  create,
+  list,
+  retrieve,
+  getRandom,
+  destroy,
+} = require("../../config/db");
 const {
   problemMenu,
   addQuestions,
   addSolution,
-} = require("../constants/problems");
-const { studyHandler } = require("./study");
+} = require("../../constants/problems/problems");
+// const { studyHandler } = require("./study");
+const { mainHandler } = require("../index");
 
 /*
 startProblem
@@ -15,9 +22,6 @@ TODO: set timer
 
 removeProblem
 TODO: maybe remove multiple?
-
-problemHandler
-FIXME: fix "Back" - circular dependency issue
 */
 
 const startProblem = async () => {
@@ -92,11 +96,11 @@ const problemHandler = async () => {
     addProblem();
   } else if (answer.menuOptions == "Remove") {
     removeProblem();
-  } else if (answer.menuOptions == "< Main Menu") {
-    console.log(answer);
-  } else if (answer.menuOptions == "Exit") {
-    return;
+  } else if (answer.menuOptions == "Main Menu") {
+    mainHandler();
   }
 };
 
-module.exports = { problemHandler };
+module.exports = { problemHandler, startProblem };
+
+const { studyHandler } = require("./study");

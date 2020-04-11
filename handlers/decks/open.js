@@ -1,10 +1,10 @@
 const inquirer = require("inquirer");
 const {
-  openDeckMenu,
+  openMenu,
   askExisting,
   addQuestions,
   askAgain,
-} = require("../constants/openDeck");
+} = require("../../constants/decks/open");
 const {
   create,
   createJoin,
@@ -12,7 +12,8 @@ const {
   retrieve,
   getDeckWithProblem,
   removeJoin,
-} = require("../config/db");
+} = require("../../config/db");
+const { deckHandler } = require("./decks");
 
 /*
 start
@@ -45,7 +46,7 @@ const addProblem = async (deck) => {
     addProblem(deck);
   }
 
-  openDeckHandler(deck);
+  openHandler(deck);
 };
 
 const addExisting = async () => {
@@ -108,11 +109,11 @@ const removeProblem = async (deck) => {
     const problem = await retrieve(answer.title, "Problem");
     const join = await removeJoin(deck._id, problem._id);
   }
-  openDeckHandler(deck);
+  openHandler(deck);
 };
 
-const openDeckHandler = async (deck) => {
-  const answer = await inquirer.prompt(openDeckMenu);
+const openHandler = async (deck) => {
+  const answer = await inquirer.prompt(openMenu);
   if (answer.menuOptions == "Start") {
     start(problem);
   } else if (answer.menuOptions == "View Problems") {
@@ -121,7 +122,9 @@ const openDeckHandler = async (deck) => {
     addProblem(deck);
   } else if (answer.menuOptions == "Remove Problem") {
     removeProblem(deck);
+  } else if (answer.menuOptions == "Back") {
+    deckHandler();
   }
 };
 
-module.exports = { openDeckHandler };
+module.exports = { openHandler };

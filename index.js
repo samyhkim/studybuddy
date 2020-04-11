@@ -1,8 +1,5 @@
 #!/usr/bin/env node
-const inquirer = require("inquirer");
-const { mainMenu } = require("./constants/index");
-const { deckHandler } = require("./handlers/decks");
-const { problemHandler } = require("./handlers/problems");
+const { mainHandler } = require("./handlers/index");
 
 /*
 index
@@ -31,16 +28,5 @@ index
 function main() {
   mainHandler();
 }
-
-const mainHandler = async () => {
-  const answer = await inquirer.prompt(mainMenu);
-  if (answer.menuOptions == "📚 Decks") {
-    deckHandler();
-  } else if (answer.menuOptions == "💡 Problems") {
-    problemHandler();
-  } else if (answer.menuOptions == "Exit") {
-    return;
-  }
-};
 
 main();

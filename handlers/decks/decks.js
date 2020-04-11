@@ -4,11 +4,11 @@ const {
   create,
   list,
   retrieve,
-  getThreeRefactor,
+  getThreeTitles,
   destroy,
-} = require("../config/db");
-const { deckMenu, addQuestions } = require("../constants/decks");
-const { openDeckHandler } = require("./openDeck");
+} = require("../../config/db");
+const { deckMenu, addQuestions } = require("../../constants/decks/decks");
+const { mainHandler } = require("../index");
 
 /*
 TODO: is it possible to put "add" and "remove" functionality in "view all"?
@@ -18,16 +18,16 @@ removeDeck
 TODO: add "Back" functionality -> return deckHandler()
 TODO: maybe remove multiple?
 
-FIXME: inefficiency
+FIXME: inefficiency?
 extract titles with getThree()
 startDeck() takes title and reverse searches for id
 pass id, title, and description to openDeckHandler()
 */
 
-const startDeck = async (title) => {
+const openDeck = async (title) => {
   const deck = await retrieve(title, "Deck");
 
-  openDeckHandler(deck);
+  openHandler(deck);
 };
 
 const addDeck = async () => {
@@ -80,26 +80,14 @@ const removeDeck = async () => {
   deckHandler();
 };
 
-const findDeck = (title) => {
-  // Make case insensitive
-  const search = new RegExp(title, "i");
-  Deck.find({ title: search }).then((deck) => {
-    console.log(deck);
-    console.log(`${deck.length} matches`);
-    db.connection.close();
-  });
-};
-
 const playground = async () => {
-  const problems = await getThreeRefactor();
+  const problems = await getThreeTitles();
   console.log(problems);
 };
 
 const deckHandler = async () => {
   const menu = await deckMenu();
-  // console.log(menu);
   const answer = await inquirer.prompt(menu);
-  // const answer = await inquirer.prompt(deckMenu); // try creating getDeckMenu()
   if (answer.menuOptions == "View All") {
     viewDecks();
   } else if (answer.menuOptions == "Add") {
@@ -107,13 +95,13 @@ const deckHandler = async () => {
   } else if (answer.menuOptions == "Remove") {
     removeDeck();
   } else if (answer.menuOptions == "Main Menu") {
-    playground();
-  } else if (answer.menuOptions == "Exit") {
-    return;
+    // playground();
+    mainHandler();
   } else {
-    // passing selected title
-    startDeck(answer.menuOptions);
+    openDeck(answer.menuOptions);
   }
 };
 
 module.exports = { deckHandler };
+
+const { openHandler } = require("./open");

@@ -35,10 +35,10 @@ const addQuestions = [
   },
 ];
 
-const openDeckMenu = {
+const openMenu = {
   type: "list",
   name: "menuOptions",
-  choices: ["Start", "View Problems", "Add Problem", "Remove Problem"],
+  choices: ["Start", "View Problems", "Add Problem", "Remove Problem", "Back"],
 };
 
-module.exports = { openDeckMenu, askExisting, addQuestions, askAgain };
+module.exports = { openMenu, askExisting, addQuestions, askAgain };
