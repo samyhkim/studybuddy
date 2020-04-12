@@ -20,17 +20,46 @@ const addQuestions = [
     message: "Problem title?",
   },
   {
-    type: "input",
+    type: "editor",
     name: "prompt",
     message: "Problem prompt?",
   },
   {
     type: "confirm",
-    name: "solution",
-    message: "Do you want to save solution?",
+    name: "solution1",
+    message: "Do you want to save a solution?",
     default: false,
   },
+  {
+    type: "editor",
+    name: "solution",
+    message: "Write your solution.",
+    when: function (answers) {
+      return answers.solution1;
+    },
+  },
+  {
+    type: "confirm",
+    name: "notes",
+    message: "Do you want to save notes?",
+    default: false,
+    when: function (answers) {
+      return answers.solution != null;
+    },
+  },
+  {
+    type: "editor",
+    name: "notes",
+    message: "Write your notes.",
+    when: saysYes("notes"),
+  },
 ];
+
+function saysYes(question) {
+  return function (answers) {
+    return answers[question];
+  };
+}
 
 const addSolution = {
   type: "editor",

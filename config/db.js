@@ -74,6 +74,42 @@ const createJoin = async (deckId, problemId) => {
   await addDeckToProblem(problemId, deckId);
 };
 
+const addNoteToProblem = async (problemId, body) => {
+  await dbConnect();
+  const mongo_promise = await Problem.findByIdAndUpdate(
+    problemId,
+    {
+      $set: {
+        notes: body.notes,
+      },
+    },
+    {
+      new: true,
+      useFindAndModify: false,
+    }
+  );
+  await dbClose();
+  return mongo_promise;
+};
+
+const addSolutionToProblem = async (problemId, body) => {
+  await dbConnect();
+  const mongo_promise = await Problem.findByIdAndUpdate(
+    problemId,
+    {
+      $set: {
+        solution: body.solution,
+      },
+    },
+    {
+      new: true,
+      useFindAndModify: false,
+    }
+  );
+  await dbClose();
+  return mongo_promise;
+};
+
 // READ
 const list = async (type) => {
   await dbConnect();
@@ -205,6 +241,8 @@ const removeJoin = async (deckId, problemId) => {
 module.exports = {
   create,
   createJoin,
+  addNoteToProblem,
+  addSolutionToProblem,
   list,
   retrieve,
   getThreeTitles,

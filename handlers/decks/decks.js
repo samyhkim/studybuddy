@@ -11,17 +11,8 @@ const { deckMenu, addQuestions } = require("../../constants/decks/decks");
 const { mainHandler } = require("../index");
 
 /*
-TODO: is it possible to put "add" and "remove" functionality in "view all"?
-      or trigger them with "+"/"-" keys?
-
 removeDeck
 TODO: add "Back" functionality -> return deckHandler()
-TODO: maybe remove multiple?
-
-FIXME: inefficiency?
-extract titles with getThree()
-startDeck() takes title and reverse searches for id
-pass id, title, and description to openDeckHandler()
 */
 
 const openDeck = async (title) => {

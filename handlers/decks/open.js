@@ -25,9 +25,6 @@ TODO: start selected problem
 
 viewReview
 TODO: get all problems from review that are overdue and due today
-
-removeProblem
-TODO: ask to remove from just the deck or from all problems
 */
 
 const start = async () => {};
@@ -40,7 +37,7 @@ const addProblem = async (deck) => {
   } else {
     problem = await addNew();
   }
-  const join = await createJoin(deck._id, problem._id);
+  await createJoin(deck._id, problem._id);
   answer = await inquirer.prompt(askAgain);
   if (answer.again) {
     addProblem(deck);
@@ -106,7 +103,7 @@ const removeProblem = async (deck) => {
   ]);
   if (answer.confirm) {
     const problem = await retrieve(answer.title, "Problem");
-    const join = await removeJoin(deck._id, problem._id);
+    await removeJoin(deck._id, problem._id);
   }
   openHandler(deck);
 };

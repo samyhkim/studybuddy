@@ -16,17 +16,16 @@ const {
 const { mainHandler } = require("../index");
 
 /*
-startProblem
-TODO: set timer
+viewProblems
+FIXED: wire up startProblem() upon selection
 
-removeProblem
-TODO: maybe remove multiple?
+addProblem
+FIXED: open editor for prompt input
+FIXME: ordering of addQuestions
 */
 
-const startProblem = async () => {
+const startRandom = async () => {
   const problem = await getRandom();
-  console.log(problem[0].title);
-  console.log(problem[0].prompt);
 
   studyHandler(problem[0]);
 };
@@ -41,12 +40,13 @@ const viewProblems = async () => {
     },
   ]);
   const problem = await retrieve(answer.title, "Problem");
-  console.log(chalk.bold.yellow(problem.title));
-  console.log(chalk.black.bgWhite(problem.prompt));
-
-  problemHandler();
+  studyHandler(problem);
 };
 
+// get title and prompt
+// ask for solution
+// if yes, push to answers
+// create(answers)
 const addProblem = async () => {
   const answers = await inquirer.prompt(addQuestions);
   if (answers.solution) {
@@ -56,9 +56,6 @@ const addProblem = async () => {
   const problem = await create(answers, "Problem");
   console.log("New Problem Added");
   console.log(problem.title);
-  console.log(problem.prompt);
-  console.log(problem.solution);
-
   problemHandler();
 };
 
@@ -88,7 +85,7 @@ const removeProblem = async () => {
 const problemHandler = async () => {
   const answer = await inquirer.prompt(problemMenu);
   if (answer.menuOptions == "Start") {
-    startProblem();
+    startRandom();
   } else if (answer.menuOptions == "View All") {
     viewProblems();
   } else if (answer.menuOptions == "Add") {
