@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { mainHandler } = require("./handlers/index");
+const { mainHandler } = require("./controllers/index");
 
 /*
 index

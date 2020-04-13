@@ -1,12 +1,6 @@
 const inquirer = require("inquirer");
 const chalk = require("chalk");
-const {
-  create,
-  list,
-  retrieve,
-  getThreeTitles,
-  destroy,
-} = require("../../config/db");
+const { create, list, retrieve, destroy } = require("../../config/db");
 const { deckMenu, addQuestions } = require("../../constants/decks/decks");
 const { mainHandler } = require("../index");
 

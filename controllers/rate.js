@@ -1,6 +1,10 @@
 const SRM = require("../config/algo");
 const { addProblemToReview, updateProblemDueDate } = require("../config/db");
 
+/*
+TODO: how to handle problem progress update?
+*/
+
 const rateHandler = async (deck, problem, answer) => {
   const algo = new SRM();
   const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;

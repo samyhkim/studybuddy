@@ -13,15 +13,14 @@ const {
   getRandomFromDeck,
   getDeckWithProblems,
   removeJoin,
-  listReviews,
-  getNextFromReview,
+  listReview,
 } = require("../../config/db");
 const { deckHandler } = require("./decks");
 
 const getProblem = async (deck) => {
-  let problem = await getNextFromReview(deck._id);
-  if (problem.length > 0) {
-    studyHandler(deck, problem[0]);
+  let problems = await listReview(deck._id);
+  if (problems.length > 0) {
+    studyHandler(deck, problems[0]);
   } else {
     problem = await getRandomFromDeck(deck._id);
     studyHandler(deck, problem);

@@ -2,3 +2,4 @@ node_modules
 ideas.txt
 sum.js
 tests
+config/algo.js
