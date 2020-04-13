@@ -1,5 +1,5 @@
 const inquirer = require("inquirer");
-const { mainMenu } = require("../constants/index");
+const { mainMenu } = require("../helpers/index");
 
 const mainHandler = async () => {
   const answer = await inquirer.prompt(mainMenu);

@@ -7,27 +7,34 @@ const {
   retrieve,
   getRandom,
   destroy,
+  destroyById,
 } = require("../../config/db");
 const {
   problemMenu,
   addQuestions,
-  addSolution,
-} = require("../../constants/problems/problems");
+  addNotes,
+} = require("../../helpers/problems/problems");
 const { mainHandler } = require("../index");
 
 /*
 addProblem
 FIXME: ordering of addQuestions
+
+DONE: DeprecationWarning: collection.ensureIndex is deprecated. Use createIndexes instead.
 */
 
 const startRandom = async () => {
   const problem = await getRandom();
-
+  console.log(problem);
   studyHandler(problem[0]);
 };
 
 const viewProblems = async () => {
   const problems = await list("Problem");
+  if (problems.length === 0) {
+    console.log("There are no problems.");
+    problemHandler();
+  }
   const answer = await inquirer.prompt([
     {
       type: "list",
@@ -41,10 +48,12 @@ const viewProblems = async () => {
 
 const addProblem = async () => {
   const answers = await inquirer.prompt(addQuestions);
-  if (answers.solution) {
-    const solution = await inquirer.prompt(addSolution);
-    answers.solution = solution.solution;
-  }
+  // .then(() => inquirer.prompt(addNotes));
+  // if (answers.solution) {
+  //   const solution = await inquirer.prompt(addSolution);
+  //   answers.solution = solution.solution;
+  // }
+  console.log(answers);
   const problem = await create(answers, "Problem");
   console.log("New Problem Added");
   console.log(problem);
@@ -72,6 +81,18 @@ const removeProblem = async () => {
     console.log(response);
   }
   problemHandler();
+};
+
+const removeById = async () => {
+  const answer = await inquirer.prompt([
+    {
+      type: "input",
+      name: "id",
+      message: "What problem do you want to remove?",
+    },
+  ]);
+  const response = await destroyById(answer.id);
+  console.log(response);
 };
 
 const problemHandler = async () => {

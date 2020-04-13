@@ -1,12 +1,17 @@
 const inquirer = require("inquirer");
 const chalk = require("chalk");
-const { create, list, retrieve, destroy } = require("../../config/db");
-const { deckMenu, addQuestions } = require("../../constants/decks/decks");
+const { create, retrieve, destroy } = require("../../config/db");
+const {
+  getDeckMenu,
+  getViewDeck,
+  getRemoveDeck,
+  addQuestions,
+} = require("../../helpers/decks/decks");
 const { mainHandler } = require("../index");
 
 /*
 removeDeck
-TODO: add "Back" functionality -> return deckHandler()
+DONE: add "Back" functionality -> return deckHandler()
 */
 
 const openDeck = async (title) => {
@@ -17,48 +22,32 @@ const openDeck = async (title) => {
 
 const addDeck = async () => {
   const answers = await inquirer.prompt(addQuestions);
+
   const deck = await create(answers, "Deck");
-  console.log("New Deck Added");
-  // console.log(deck.title);
-  // console.log(deck.description);
-  console.log(deck);
+  console.log("New Deck Added: " + chalk.bold.yellow(deck.title));
 
   deckHandler();
 };
 
 const viewDecks = async () => {
-  const decks = await list("Deck");
-  const answer = await inquirer.prompt([
-    {
-      type: "list",
-      name: "title",
-      choices: decks,
-    },
-  ]);
-  const deck = await retrieve(answer.title, "Deck");
-  console.log(chalk.bold.yellow(deck.title));
-  console.log(chalk.black.bgWhite(deck.description));
-  deckHandler();
+  const decks = await getViewDeck();
+  const answer = await inquirer.prompt(decks);
+
+  if (answer.choice == "Back") {
+    deckHandler();
+  } else {
+    const deck = await retrieve(answer.choice, "Deck");
+
+    openHandler(deck);
+  }
 };
 
 const removeDeck = async () => {
-  const decks = await list("Deck");
-  const answer = await inquirer.prompt([
-    {
-      type: "list",
-      name: "title",
-      message: "What deck do you want to remove?",
-      choices: decks,
-    },
-    {
-      type: "confirm",
-      name: "confirm",
-      message: "Are you sure?",
-      default: false,
-    },
-  ]);
+  const decks = await getRemoveDeck();
+  const answer = await inquirer.prompt(decks);
+
   if (answer.confirm) {
-    const response = await destroy(answer.title, "Deck");
+    const response = await destroy(answer.choice, "Deck");
     console.log(response);
   }
 
@@ -66,8 +55,9 @@ const removeDeck = async () => {
 };
 
 const deckHandler = async () => {
-  const menu = await deckMenu();
+  const menu = await getDeckMenu();
   const answer = await inquirer.prompt(menu);
+
   if (answer.menuOptions == "View All") {
     viewDecks();
   } else if (answer.menuOptions == "Add") {

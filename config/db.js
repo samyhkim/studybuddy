@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+mongoose.set("useCreateIndex", true);
 const Problem = require("../models/problems");
 const Deck = require("../models/decks");
 const Review = require("../models/review");
@@ -318,6 +319,17 @@ const destroy = async (title, type) => {
   return mongo_promise;
 };
 
+const destroyById = async (problemId) => {
+  await dbConnect();
+  const mongo_promise = await Problem.findByIdAndDelete(problemId)
+    .then()
+    .catch((err) =>
+      console.error("destroy: Error while adding deleting problem.", err)
+    );
+  await dbClose();
+  return mongo_promise;
+};
+
 const removeProblemFromDeck = async (deckId, problemId) => {
   await dbConnect();
   const mongo_promise = await Deck.findByIdAndUpdate(
@@ -452,6 +464,7 @@ module.exports = {
   getRandomFromDeck,
   getDeckWithProblems,
   destroy,
+  destroyById,
   removeJoin,
   addProblemToReview,
   listReview,

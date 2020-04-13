@@ -1,3 +1,5 @@
+const chalk = require("chalk");
+
 const askExisting = [
   {
     type: "confirm",
@@ -35,17 +37,20 @@ const addQuestions = [
   },
 ];
 
-const openMenu = {
-  type: "list",
-  name: "menuOptions",
-  choices: [
-    "Start",
-    "View Review",
-    "View Problems",
-    "Add Problem",
-    "Remove Problem",
-    "Back",
-  ],
+const getOpenMenu = async (deck) => {
+  return {
+    type: "list",
+    name: "menuOptions",
+    message: chalk.bold.yellow(deck.title),
+    choices: [
+      "Start",
+      "View Review",
+      "View Problems",
+      "Add Problem",
+      "Remove Problem",
+      "Back",
+    ],
+  };
 };
 
-module.exports = { openMenu, askExisting, addQuestions, askAgain };
+module.exports = { getOpenMenu, askExisting, addQuestions, askAgain };

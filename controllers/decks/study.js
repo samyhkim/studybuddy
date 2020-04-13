@@ -1,12 +1,12 @@
 const inquirer = require("inquirer");
 const { addNoteToProblem, addSolutionToProblem } = require("../../config/db");
-const { studyMenu } = require("../../constants/decks/study");
+const { studyMenu } = require("../../helpers/decks/study");
 const { rateHandler } = require("../rate");
-const { rateProblem } = require("../../constants/rate");
-const { getProblem } = require("../decks/open");
+const { rateProblem } = require("../../helpers/rate");
+const { getProblem, openHandler } = require("../decks/open");
 
 /*
-TODO: Should "back" be the previous problem or the previous menu?
+DONE: Should "back" be the previous problem or the previous menu?
 */
 
 const view = async (deck, problem, type) => {
@@ -60,6 +60,7 @@ const studyHandler = async (deck, problem) => {
   } else if (answer.menuOptions == "Edit Solution") {
     editSolution(problem);
   } else if (answer.menuOptions == "Back") {
+    openHandler();
   }
 };
 

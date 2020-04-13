@@ -4,10 +4,11 @@ const {
   addNoteToProblem,
   addSolutionToProblem,
 } = require("../../config/db");
-const { studyMenu, nextProblem } = require("../../constants/problems/study");
+const { studyMenu, nextProblem } = require("../../helpers/problems/study");
+const { problemHandler } = require("./problems");
 
 /*
-TODO: Should "back" be the previous problem or the previous menu?
+DONE Should "back" be the previous problem or the previous menu?
 */
 
 const view = async (problem, type) => {
@@ -61,6 +62,7 @@ const studyHandler = async (problem) => {
   } else if (answer.menuOptions == "Edit Solution") {
     editSolution(problem);
   } else if (answer.menuOptions == "Back") {
+    problemHandler();
   }
 };
 

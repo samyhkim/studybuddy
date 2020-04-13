@@ -26,7 +26,7 @@ const addQuestions = [
   },
   {
     type: "confirm",
-    name: "solution1",
+    name: "solution",
     message: "Do you want to save a solution?",
     default: false,
   },
@@ -35,36 +35,45 @@ const addQuestions = [
     name: "solution",
     message: "Write your solution.",
     when: function (answers) {
-      return answers.solution1;
+      return answers.solution;
     },
   },
+];
+//   {
+//     type: "confirm",
+//     name: "notes",
+//     message: "Do you want to save notes?",
+//     default: false,
+//     when: function (answers) {
+//       return answers.solution != null;
+//     },
+//   },
+//   {
+//     type: "editor",
+//     name: "notes",
+//     message: "Write your notes.",
+//     when: saysYes("notes"),
+//   },
+// ];
+
+// function saysYes(question) {
+//   return function (answers) {
+//     return answers[question];
+//   };
+// }
+
+const addNotes = [
   {
     type: "confirm",
     name: "notes",
     message: "Do you want to save notes?",
     default: false,
-    when: function (answers) {
-      return answers.solution != null;
-    },
   },
   {
     type: "editor",
     name: "notes",
     message: "Write your notes.",
-    when: saysYes("notes"),
   },
 ];
 
-function saysYes(question) {
-  return function (answers) {
-    return answers[question];
-  };
-}
-
-const addSolution = {
-  type: "editor",
-  name: "solution",
-  message: "Write your solution.",
-};
-
-module.exports = { problemMenu, workMenu, addQuestions, addSolution };
+module.exports = { problemMenu, workMenu, addQuestions, addNotes };

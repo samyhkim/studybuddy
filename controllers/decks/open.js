@@ -1,10 +1,10 @@
 const inquirer = require("inquirer");
 const {
-  openMenu,
+  getOpenMenu,
   askExisting,
   addQuestions,
   askAgain,
-} = require("../../constants/decks/open");
+} = require("../../helpers/decks/open");
 const {
   create,
   createJoin,
@@ -76,10 +76,12 @@ const addExisting = async () => {
 
 const addNew = async () => {
   const answers = await inquirer.prompt(addQuestions);
+
   if (answers.solution) {
     const solution = await inquirer.prompt(addSolution);
     answers.solution = solution.solution;
   }
+
   const problem = await create(answers, "Problem");
   console.log("New Problem Added");
   console.log(problem.title);
@@ -112,7 +114,9 @@ const removeProblem = async (deck) => {
 };
 
 const openHandler = async (deck) => {
-  const answer = await inquirer.prompt(openMenu);
+  const menu = await getOpenMenu(deck);
+  const answer = await inquirer.prompt(menu);
+
   if (answer.menuOptions == "Start") {
     getProblem(deck);
   } else if (answer.menuOptions == "View Review") {
