@@ -9,11 +9,6 @@ const {
 } = require("../../helpers/decks/decks");
 const { mainHandler } = require("../index");
 
-/*
-removeDeck
-DONE: add "Back" functionality -> return deckHandler()
-*/
-
 const openDeck = async (title) => {
   const deck = await retrieve(title, "Deck");
 

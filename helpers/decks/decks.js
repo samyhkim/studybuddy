@@ -38,7 +38,7 @@ const getRemoveDeck = async () => {
       message: chalk.bold.red("Are you sure?"),
       default: false,
       when: function (answer) {
-        return answer.title != "Back";
+        return answer.choice != "Back";
       },
     },
   ];

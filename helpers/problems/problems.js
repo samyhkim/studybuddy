@@ -1,16 +1,21 @@
 const chalk = require("chalk");
+const { list } = require("../../config/db");
 
 const problemMenu = {
   type: "list",
   name: "menuOptions",
-  message: chalk.green.bold("Problems"),
+  message: chalk.green.bold("💡 Problems"),
   choices: ["Start", "View All", "Add", "Remove", "Main Menu"],
 };
 
-const workMenu = {
-  type: "list",
-  name: "menuOptions",
-  choices: ["View Notes", "View Solution", "Edit Notes", "Edit Solution"],
+const getViewProblems = async () => {
+  const problems = await list("Problem");
+  const choices = ["Back"];
+  return {
+    type: "list",
+    name: "choice",
+    choices: () => choices.concat(problems),
+  };
 };
 
 const addQuestions = [
@@ -24,48 +29,29 @@ const addQuestions = [
     name: "prompt",
     message: "Problem prompt?",
   },
+];
+
+const addSolution = [
   {
     type: "confirm",
-    name: "solution",
-    message: "Do you want to save a solution?",
+    name: "confirm",
+    message: "Do you want to save solution?",
     default: false,
   },
   {
     type: "editor",
     name: "solution",
     message: "Write your solution.",
-    when: function (answers) {
-      return answers.solution;
+    when: function (answer) {
+      return answer.confirm;
     },
   },
 ];
-//   {
-//     type: "confirm",
-//     name: "notes",
-//     message: "Do you want to save notes?",
-//     default: false,
-//     when: function (answers) {
-//       return answers.solution != null;
-//     },
-//   },
-//   {
-//     type: "editor",
-//     name: "notes",
-//     message: "Write your notes.",
-//     when: saysYes("notes"),
-//   },
-// ];
-
-// function saysYes(question) {
-//   return function (answers) {
-//     return answers[question];
-//   };
-// }
 
 const addNotes = [
   {
     type: "confirm",
-    name: "notes",
+    name: "confirm",
     message: "Do you want to save notes?",
     default: false,
   },
@@ -73,7 +59,39 @@ const addNotes = [
     type: "editor",
     name: "notes",
     message: "Write your notes.",
+    when: function (answer) {
+      return answer.confirm;
+    },
   },
 ];
 
-module.exports = { problemMenu, workMenu, addQuestions, addNotes };
+const getRemoveProblem = async () => {
+  const problems = await list("Problem");
+  const choices = ["Back"];
+  return [
+    {
+      type: "list",
+      name: "choice",
+      message: "What problem do you want to remove?",
+      choices: () => choices.concat(problems),
+    },
+    {
+      type: "confirm",
+      name: "confirm",
+      message: chalk.bold.red("Are you sure?"),
+      default: false,
+      when: function (answer) {
+        return answer.choice != "Back";
+      },
+    },
+  ];
+};
+
+module.exports = {
+  problemMenu,
+  getViewProblems,
+  addQuestions,
+  addSolution,
+  addNotes,
+  getRemoveProblem,
+};

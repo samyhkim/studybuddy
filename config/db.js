@@ -290,6 +290,7 @@ const addSolutionToProblem = async (problemId, body) => {
 /*
 --------------------------DELETE--------------------------
 destroy() - delete deck or problem
+destroyById() - delete problem by id
 removeProblemFromDeck() - remove problem association from deck
 removeDeckFromProblem() - remove deck association from problem
 removeJoin() - remove (deck, problem) association
