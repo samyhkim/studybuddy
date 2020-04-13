@@ -6,22 +6,9 @@ const { rateProblem } = require("../../constants/rate");
 const { getProblem } = require("../decks/open");
 
 /*
-view
-DONE: rate or go back
-DONE: rate == next == start problem
-
-editNotes
-DONE: open editor
-DONE: save and go back
-
-editSolution
-DONE: open editor
-DONE: save and go back
-
 TODO: Should "back" be the previous problem or the previous menu?
 */
 
-// receive problem info: id, title, prompt, solution, notes, decks, progress
 const view = async (deck, problem, type) => {
   if (type == "Notes") {
     console.log(problem.notes);

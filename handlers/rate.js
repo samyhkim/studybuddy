@@ -12,8 +12,7 @@ const rateHandler = async (deck, problem, answer) => {
       .then(() => console.log("Added to review."))
       .catch((err) => console.log(err));
   } else {
-    // set problem's progress to new progress, update review model by dueDate and problemId
-    await updateProblemDueDate(deck._id, problem._id, newInfo)
+    await updateProblemDueDate(deck._id, problem._id, newInfo.dueDate)
       .then(() => console.log("Review updated."))
       .catch((err) => console.log(err));
   }

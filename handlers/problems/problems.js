@@ -39,10 +39,6 @@ const viewProblems = async () => {
   studyHandler(problem);
 };
 
-// get title and prompt
-// ask for solution
-// if yes, push to answers
-// create(answers)
 const addProblem = async () => {
   const answers = await inquirer.prompt(addQuestions);
   if (answers.solution) {

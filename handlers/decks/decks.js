@@ -71,11 +71,6 @@ const removeDeck = async () => {
   deckHandler();
 };
 
-const playground = async () => {
-  const problems = await getThreeTitles();
-  console.log(problems);
-};
-
 const deckHandler = async () => {
   const menu = await deckMenu();
   const answer = await inquirer.prompt(menu);
@@ -86,7 +81,6 @@ const deckHandler = async () => {
   } else if (answer.menuOptions == "Remove") {
     removeDeck();
   } else if (answer.menuOptions == "Main Menu") {
-    // playground();
     mainHandler();
   } else {
     openDeck(answer.menuOptions);

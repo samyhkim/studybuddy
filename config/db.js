@@ -23,8 +23,8 @@ const dbClose = async () => {
 
 /*
 --------------------------CREATE--------------------------
-create()
-createJoin()
+create() - create new deck or problem
+createJoin() - create (deck, problem) association
 */
 
 const create = async (body, type) => {
@@ -46,12 +46,12 @@ const createJoin = async (deckId, problemId) => {
 
 /*
 --------------------------READ--------------------------
-list()
-retrieve()
-getThreeTitles() - returns only the titles of the 3 documents
-getRandom()
-getRandomFromDeck()
-getDeckWithProblems()
+list() - get all deck or problem documents
+retrieve() - get one matching document by title
+getThreeTitles() - get title of first 3 documents
+getRandom() - get random problem
+getRandomFromDeck() - get random problem from deck
+getDeckWithProblems() - get all problems of deck
 */
 
 const list = async (type) => {
@@ -133,10 +133,10 @@ const getDeckWithProblems = async (deckId) => {
 
 /*
 --------------------------UPDATE--------------------------
-addProblemToDeck()
-addDeckToProblem()
-addNoteToProblem()
-addSolutionToProblem()
+addProblemToDeck() - add problem association to deck
+addDeckToProblem() - add deck association to problem
+addNoteToProblem() - add note to problem
+addSolutionToProblem() - add solution to problem
 */
 
 const addProblemToDeck = async (deckId, problemId) => {
@@ -213,10 +213,10 @@ const addSolutionToProblem = async (problemId, body) => {
 
 /*
 --------------------------DELETE--------------------------
-destroy()
-removeProblemFromDeck()
-removeDeckFromProblem()
-removeJoin()
+destroy() - delete deck or problem
+removeProblemFromDeck() - remove problem association from deck
+removeDeckFromProblem() - remove deck association from problem
+removeJoin() - remove (deck, problem) association
 */
 
 const destroy = async (title, type) => {
@@ -278,10 +278,10 @@ const removeJoin = async (deckId, problemId) => {
 
 /*
 --------------------------REVIEW--------------------------
-addToReview()
+addProblemToReview() - add (deck, problem, dueDate) to Review
 listReviews() - TODO: get all problems from review that are overdue and due today
-getNextFromReview()
-updateProblemQueue()
+getNextFromReview() - look at (deck, dueDate) and return if dueDate lte today
+updateProblemQueue() - find matching (deck, problem) and update its dueDate
 */
 
 const addProblemToReview = async (deckId, problemId, dueDate) => {
@@ -302,7 +302,6 @@ const listReviews = async (deckId) => {
   return mongo_promise;
 };
 
-// look in review index and get next dueDate, return problem
 const getNextFromReview = async (deckId) => {
   await dbConnect();
   const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
@@ -315,7 +314,7 @@ const getNextFromReview = async (deckId) => {
   return mongo_promise;
 };
 
-const updateProblemDueDate = async (deckId, problemId, newInfo) => {
+const updateProblemDueDate = async (deckId, problemId, dueDate) => {
   await dbConnect();
   const mongo_promise = await Review.findOneAndUpdate(
     {
@@ -324,7 +323,7 @@ const updateProblemDueDate = async (deckId, problemId, newInfo) => {
     },
     {
       $set: {
-        dueDate: newInfo.dueDate,
+        dueDate: dueDate,
       },
     },
     {
@@ -333,8 +332,7 @@ const updateProblemDueDate = async (deckId, problemId, newInfo) => {
     }
   );
   await dbClose();
-  // return mongo_promise;
-  console.log(mongo_promise);
+  return mongo_promise;
 };
 
 module.exports = {

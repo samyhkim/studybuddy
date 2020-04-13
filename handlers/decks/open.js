@@ -18,15 +18,6 @@ const {
 } = require("../../config/db");
 const { deckHandler } = require("./decks");
 
-/*
-getProblem
-DONE: get problem from review queue first
-        if there are none to do, then do new problems
-
-viewProblems
-DONE: start selected problem
-*/
-
 const getProblem = async (deck) => {
   let problem = await getNextFromReview(deck._id);
   if (problem.length > 0) {

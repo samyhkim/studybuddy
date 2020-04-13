@@ -25,17 +25,6 @@ const view = async (problem, type) => {
   }
 };
 
-const viewSolution = async (problem) => {
-  console.log(problem.solution);
-  const answer = await inquirer.prompt(nextProblem);
-  if (answer.choice == "Next") {
-    const problem = await getRandom();
-    studyHandler(problem[0]);
-  } else {
-    studyHandler(problem);
-  }
-};
-
 const editNotes = async (problem) => {
   const answer = await inquirer.prompt({
     type: "editor",
