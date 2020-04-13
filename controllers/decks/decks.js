@@ -59,7 +59,7 @@ const deckHandler = async () => {
     addDeck();
   } else if (answer.menuOptions == "Remove") {
     removeDeck();
-  } else if (answer.menuOptions == "Main Menu") {
+  } else if (answer.menuOptions == "Back to Main Menu") {
     mainHandler();
   } else {
     openDeck(answer.menuOptions);

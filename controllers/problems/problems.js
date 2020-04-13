@@ -11,11 +11,6 @@ const {
 } = require("../../helpers/problems/problems");
 const { mainHandler } = require("../index");
 
-/*
-addProblem
-DONE: ordering of addQuestions
-*/
-
 const startRandom = async () => {
   const problem = await getRandom();
 
@@ -76,7 +71,7 @@ const problemHandler = async () => {
     addProblem();
   } else if (answer.menuOptions == "Remove") {
     removeProblem();
-  } else if (answer.menuOptions == "Main Menu") {
+  } else if (answer.menuOptions == "Back to Main Menu") {
     mainHandler();
   }
 };

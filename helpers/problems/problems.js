@@ -1,3 +1,4 @@
+const inquirer = require("inquirer");
 const chalk = require("chalk");
 const { list } = require("../../config/db");
 
@@ -5,15 +6,24 @@ const problemMenu = {
   type: "list",
   name: "menuOptions",
   message: chalk.green.bold("💡 Problems"),
-  choices: ["Start", "View All", "Add", "Remove", "Main Menu"],
+  choices: [
+    new inquirer.Separator(),
+    "Start",
+    "View All",
+    "Add",
+    "Remove",
+    new inquirer.Separator(),
+    "Back to Main Menu",
+  ],
 };
 
 const getViewProblems = async () => {
   const problems = await list("Problem");
-  const choices = ["Back"];
+  const choices = [new inquirer.Separator(), "Back", new inquirer.Separator()];
   return {
     type: "list",
     name: "choice",
+    message: "Your problems:",
     choices: () => choices.concat(problems),
   };
 };
@@ -67,12 +77,12 @@ const addNotes = [
 
 const getRemoveProblem = async () => {
   const problems = await list("Problem");
-  const choices = ["Back"];
+  const choices = [new inquirer.Separator(), "Back", new inquirer.Separator()];
   return [
     {
       type: "list",
       name: "choice",
-      message: "What problem do you want to remove?",
+      message: chalk.bold.red("What problem do you want to remove?"),
       choices: () => choices.concat(problems),
     },
     {

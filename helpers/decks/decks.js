@@ -1,9 +1,20 @@
+const inquirer = require("inquirer");
 const chalk = require("chalk");
 const { list, getThreeTitles } = require("../../config/db");
 
 const getDeckMenu = async () => {
   const titles = await getThreeTitles();
-  const menu = titles.concat(["View All", "Add", "Remove", "Main Menu"]);
+  if (titles.length > 0) {
+    titles.unshift(new inquirer.Separator());
+  }
+  const menu = titles.concat([
+    new inquirer.Separator(),
+    "View All",
+    "Add",
+    "Remove",
+    new inquirer.Separator(),
+    "Back to Main Menu",
+  ]);
   return {
     type: "list",
     name: "menuOptions",
@@ -14,22 +25,23 @@ const getDeckMenu = async () => {
 
 const getViewDeck = async () => {
   const decks = await list("Deck");
-  const choices = ["Back"];
+  const choices = [new inquirer.Separator(), "Back", new inquirer.Separator()];
   return {
     type: "list",
     name: "choice",
+    message: "Your decks:",
     choices: () => choices.concat(decks),
   };
 };
 
 const getRemoveDeck = async () => {
   const decks = await list("Deck");
-  const choices = ["Back"];
+  const choices = [new inquirer.Separator(), "Back", new inquirer.Separator()];
   return [
     {
       type: "list",
       name: "choice",
-      message: "What deck do you want to remove?",
+      message: chalk.bold.red("What deck do you want to remove?"),
       choices: () => choices.concat(decks),
     },
     {
