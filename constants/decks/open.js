@@ -38,7 +38,14 @@ const addQuestions = [
 const openMenu = {
   type: "list",
   name: "menuOptions",
-  choices: ["Start", "View Problems", "Add Problem", "Remove Problem", "Back"],
+  choices: [
+    "Start",
+    "View Review",
+    "View Problems",
+    "Add Problem",
+    "Remove Problem",
+    "Back",
+  ],
 };
 
 module.exports = { openMenu, askExisting, addQuestions, askAgain };

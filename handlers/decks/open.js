@@ -10,24 +10,50 @@ const {
   createJoin,
   list,
   retrieve,
-  getDeckWithProblem,
+  getRandomFromDeck,
+  getDeckWithProblems,
   removeJoin,
+  listReviews,
+  getNextFromReview,
 } = require("../../config/db");
 const { deckHandler } = require("./decks");
 
 /*
-start
-TODO: get problem from review queue first
+getProblem
+DONE: get problem from review queue first
         if there are none to do, then do new problems
 
 viewProblems
-TODO: start selected problem
-
-viewReview
-TODO: get all problems from review that are overdue and due today
+DONE: start selected problem
 */
 
-const start = async () => {};
+const getProblem = async (deck) => {
+  let problem = await getNextFromReview(deck._id);
+  if (problem.length > 0) {
+    studyHandler(deck, problem[0]);
+  } else {
+    problem = await getRandomFromDeck(deck._id);
+    studyHandler(deck, problem);
+  }
+};
+
+const viewReview = async (deck) => {
+  await listReviews(deck._id);
+  openHandler(deck);
+};
+
+const viewProblems = async (deck) => {
+  const problems = await getDeckWithProblems(deck._id);
+  const answer = await inquirer.prompt([
+    {
+      type: "list",
+      name: "title",
+      choices: problems,
+    },
+  ]);
+  const problem = await retrieve(answer.title, "Problem");
+  studyHandler(deck, problem);
+};
 
 const addProblem = async (deck) => {
   let answer = await inquirer.prompt(askExisting);
@@ -72,19 +98,6 @@ const addNew = async () => {
   return problem;
 };
 
-const viewProblems = async (deck) => {
-  const problems = await getDeckWithProblem(deck._id);
-  const answer = await inquirer.prompt([
-    {
-      type: "list",
-      name: "title",
-      choices: problems,
-    },
-  ]);
-};
-
-const viewReview = async () => {};
-
 const removeProblem = async (deck) => {
   const problems = await getDeckWithProblem(deck._id);
   const answer = await inquirer.prompt([
@@ -111,7 +124,9 @@ const removeProblem = async (deck) => {
 const openHandler = async (deck) => {
   const answer = await inquirer.prompt(openMenu);
   if (answer.menuOptions == "Start") {
-    start(problem);
+    getProblem(deck);
+  } else if (answer.menuOptions == "View Review") {
+    viewReview(deck);
   } else if (answer.menuOptions == "View Problems") {
     viewProblems(deck);
   } else if (answer.menuOptions == "Add Problem") {
@@ -123,4 +138,6 @@ const openHandler = async (deck) => {
   }
 };
 
-module.exports = { openHandler };
+module.exports = { getProblem, openHandler };
+
+const { studyHandler } = require("./study");

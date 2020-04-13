@@ -7,19 +7,15 @@ const {
 const { studyMenu, nextProblem } = require("../../constants/problems/study");
 
 /*
-editNotes
-FIXED: open editor
-FIXED: save and go back
-
-editSolution
-FIXED: open editor
-FIXED: save and go back
-
 TODO: Should "back" be the previous problem or the previous menu?
 */
 
-const viewNotes = async (problem) => {
-  console.log(problem.notes);
+const view = async (problem, type) => {
+  if (type == "View Notes") {
+    console.log(problem.notes);
+  } else if (type == "View Solution") {
+    console.log(problem.solution);
+  }
   const answer = await inquirer.prompt(nextProblem);
   if (answer.choice == "Next") {
     const problem = await getRandom();
@@ -47,8 +43,8 @@ const editNotes = async (problem) => {
     message: "Edit this problem's notes.",
     default: problem.notes,
   });
-  await addNoteToProblem(problem._id, answer);
-  studyHandler(problem);
+  const updatedProblem = await addNoteToProblem(problem._id, answer);
+  studyHandler(updatedProblem);
 };
 
 const editSolution = async (problem) => {
@@ -58,18 +54,19 @@ const editSolution = async (problem) => {
     message: "Edit this problem's solution.",
     default: problem.solution,
   });
-  await addSolutionToProblem(problem._id, answer);
-  studyHandler(problem);
+  const updatedProblem = await addSolutionToProblem(problem._id, answer);
+  studyHandler(updatedProblem);
 };
 
 const studyHandler = async (problem) => {
   console.log(problem.title);
   console.log(problem.prompt);
   const answer = await inquirer.prompt(studyMenu);
-  if (answer.menuOptions == "View Notes") {
-    viewNotes(problem);
-  } else if (answer.menuOptions == "View Solution") {
-    viewSolution(problem);
+  if (
+    answer.menuOptions == "View Notes" ||
+    answer.menuOptions == "View Solution"
+  ) {
+    view(problem, answer.menuOptions);
   } else if (answer.menuOptions == "Edit Notes") {
     editNotes(problem);
   } else if (answer.menuOptions == "Edit Solution") {

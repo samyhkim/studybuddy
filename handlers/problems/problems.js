@@ -16,11 +16,7 @@ const {
 const { mainHandler } = require("../index");
 
 /*
-viewProblems
-FIXED: wire up startProblem() upon selection
-
 addProblem
-FIXED: open editor for prompt input
 FIXME: ordering of addQuestions
 */
 
@@ -55,7 +51,7 @@ const addProblem = async () => {
   }
   const problem = await create(answers, "Problem");
   console.log("New Problem Added");
-  console.log(problem.title);
+  console.log(problem);
   problemHandler();
 };
 

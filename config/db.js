@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Problem = require("../models/problems");
 const Deck = require("../models/decks");
+const Review = require("../models/review");
 
 const dbConnect = async () => {
   mongoose.Promise = global.Promise;
@@ -20,7 +21,12 @@ const dbClose = async () => {
     .catch((err) => console.error("Connection error", err));
 };
 
-// CREATE
+/*
+--------------------------CREATE--------------------------
+create()
+createJoin()
+*/
+
 const create = async (body, type) => {
   await dbConnect();
   let mongo_promise = null;
@@ -32,6 +38,106 @@ const create = async (body, type) => {
   await dbClose();
   return mongo_promise;
 };
+
+const createJoin = async (deckId, problemId) => {
+  await addProblemToDeck(deckId, problemId);
+  await addDeckToProblem(problemId, deckId);
+};
+
+/*
+--------------------------READ--------------------------
+list()
+retrieve()
+getThreeTitles() - returns only the titles of the 3 documents
+getRandom()
+getRandomFromDeck()
+getDeckWithProblems()
+*/
+
+const list = async (type) => {
+  await dbConnect();
+  let mongo_promise = null;
+  if (type == "Deck") {
+    mongo_promise = await Deck.find();
+  } else if (type == "Problem") {
+    mongo_promise = await Problem.find();
+  }
+  await dbClose();
+  const results = [];
+  mongo_promise.forEach((result) => {
+    results.push(result.title);
+  });
+  return results;
+};
+
+const retrieve = async (title, type) => {
+  await dbConnect();
+  let mongo_promise = null;
+  if (type == "Deck") {
+    mongo_promise = await Deck.findOne({
+      title: title,
+    });
+  } else if (type == "Problem") {
+    mongo_promise = await Problem.findOne({
+      title: title,
+    });
+  }
+  await dbClose();
+  return mongo_promise;
+};
+
+const getThreeTitles = async () => {
+  await dbConnect();
+  const mongo_promise = await Deck.find().limit(3);
+  await dbClose();
+  const results = [];
+  mongo_promise.forEach((result) => {
+    results.push(result.title);
+  });
+  return results;
+};
+
+const getRandom = async () => {
+  await dbConnect();
+  const mongo_promise = await Problem.aggregate([
+    {
+      $sample: {
+        size: 1,
+      },
+    },
+  ]);
+  await dbClose();
+  return mongo_promise;
+};
+
+const getRandomFromDeck = async (deckId) => {
+  await dbConnect();
+  const mongo_promise = await Deck.findById(deckId).populate("problems");
+  await dbClose();
+  const problems = mongo_promise.problems;
+  const random = Math.floor(Math.random() * problems.length);
+  return problems[random];
+};
+
+const getDeckWithProblems = async (deckId) => {
+  await dbConnect();
+  const mongo_promise = await Deck.findById(deckId).populate("problems");
+  await dbClose();
+  const results = [];
+  const problems = mongo_promise.problems;
+  problems.forEach((result) => {
+    results.push(result.title);
+  });
+  return results;
+};
+
+/*
+--------------------------UPDATE--------------------------
+addProblemToDeck()
+addDeckToProblem()
+addNoteToProblem()
+addSolutionToProblem()
+*/
 
 const addProblemToDeck = async (deckId, problemId) => {
   await dbConnect();
@@ -67,11 +173,6 @@ const addDeckToProblem = async (problemId, deckId) => {
   );
   await dbClose();
   return mongo_promise;
-};
-
-const createJoin = async (deckId, problemId) => {
-  await addProblemToDeck(deckId, problemId);
-  await addDeckToProblem(problemId, deckId);
 };
 
 const addNoteToProblem = async (problemId, body) => {
@@ -110,77 +211,14 @@ const addSolutionToProblem = async (problemId, body) => {
   return mongo_promise;
 };
 
-// READ
-const list = async (type) => {
-  await dbConnect();
-  let mongo_promise = null;
-  if (type == "Deck") {
-    mongo_promise = await Deck.find();
-  } else if (type == "Problem") {
-    mongo_promise = await Problem.find();
-  }
-  await dbClose();
-  const results = [];
-  mongo_promise.forEach((result) => {
-    results.push(result.title);
-  });
-  return results;
-};
+/*
+--------------------------DELETE--------------------------
+destroy()
+removeProblemFromDeck()
+removeDeckFromProblem()
+removeJoin()
+*/
 
-const retrieve = async (title, type) => {
-  await dbConnect();
-  let mongo_promise = null;
-  if (type == "Deck") {
-    mongo_promise = await Deck.findOne({
-      title: title,
-    });
-  } else if (type == "Problem") {
-    mongo_promise = await Problem.findOne({
-      title: title,
-    });
-  }
-  await dbClose();
-  return mongo_promise;
-};
-
-// returns only the titles of the 3 documents
-const getThreeTitles = async () => {
-  await dbConnect();
-  const mongo_promise = await Deck.find().limit(3);
-  await dbClose();
-  const results = [];
-  mongo_promise.forEach((result) => {
-    results.push(result.title);
-  });
-  return results;
-};
-
-const getRandom = async () => {
-  await dbConnect();
-  const mongo_promise = await Problem.aggregate([
-    {
-      $sample: {
-        size: 1,
-      },
-    },
-  ]);
-  await dbClose();
-  return mongo_promise;
-};
-
-const getDeckWithProblem = async (deckId) => {
-  await dbConnect();
-  const mongo_promise = await Deck.findById(deckId).populate("problems");
-  await dbClose();
-  const results = [];
-  const problems = mongo_promise.problems;
-  problems.forEach((result) => {
-    results.push(result.title);
-  });
-  return results;
-};
-
-// DELETE
 const destroy = async (title, type) => {
   await dbConnect();
   let mongo_promise = null;
@@ -238,6 +276,67 @@ const removeJoin = async (deckId, problemId) => {
   await removeDeckFromProblem(problemId, deckId);
 };
 
+/*
+--------------------------REVIEW--------------------------
+addToReview()
+listReviews() - TODO: get all problems from review that are overdue and due today
+getNextFromReview()
+updateProblemQueue()
+*/
+
+const addProblemToReview = async (deckId, problemId, dueDate) => {
+  const body = { deck: deckId, problem: problemId, dueDate: dueDate };
+  await dbConnect();
+  const mongo_promise = await Review.create(body);
+  await dbClose();
+  return mongo_promise;
+};
+
+const listReviews = async (deckId) => {
+  await dbConnect();
+  const mongo_promise = await Review.find({ deck: { $eq: deckId } }).sort({
+    dueDate: 1,
+  });
+  await dbClose();
+  console.log(mongo_promise);
+  return mongo_promise;
+};
+
+// look in review index and get next dueDate, return problem
+const getNextFromReview = async (deckId) => {
+  await dbConnect();
+  const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
+  const today = Math.round(new Date().getTime() / DAY_IN_MILLISECONDS);
+  const mongo_promise = await Review.find({
+    deck: { $eq: deckId },
+    dueDate: { $lte: today },
+  });
+  await dbClose();
+  return mongo_promise;
+};
+
+const updateProblemDueDate = async (deckId, problemId, newInfo) => {
+  await dbConnect();
+  const mongo_promise = await Review.findOneAndUpdate(
+    {
+      deck: { $eq: deckId },
+      problem: { $eq: problemId },
+    },
+    {
+      $set: {
+        dueDate: newInfo.dueDate,
+      },
+    },
+    {
+      new: true,
+      useFindAndModify: false,
+    }
+  );
+  await dbClose();
+  // return mongo_promise;
+  console.log(mongo_promise);
+};
+
 module.exports = {
   create,
   createJoin,
@@ -247,7 +346,12 @@ module.exports = {
   retrieve,
   getThreeTitles,
   getRandom,
-  getDeckWithProblem,
+  getRandomFromDeck,
+  getDeckWithProblems,
   destroy,
   removeJoin,
+  addProblemToReview,
+  listReviews,
+  getNextFromReview,
+  updateProblemDueDate,
 };
