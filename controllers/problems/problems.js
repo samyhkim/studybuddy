@@ -53,8 +53,7 @@ const removeProblem = async () => {
   const answer = await inquirer.prompt(problems);
 
   if (answer.confirm) {
-    const response = await destroy(answer.choice, "Problem");
-    console.log(response);
+    await destroy(answer.choice, "Problem");
   }
 
   problemHandler();
@@ -63,7 +62,7 @@ const removeProblem = async () => {
 const problemHandler = async () => {
   const answer = await inquirer.prompt(problemMenu);
 
-  if (answer.menuOptions == "Start") {
+  if (answer.menuOptions == chalk.green("Start")) {
     startRandom();
   } else if (answer.menuOptions == "View All") {
     viewProblems();
@@ -71,7 +70,7 @@ const problemHandler = async () => {
     addProblem();
   } else if (answer.menuOptions == "Remove") {
     removeProblem();
-  } else if (answer.menuOptions == "Back to Main Menu") {
+  } else if (answer.menuOptions == chalk.gray("Back to Main Menu")) {
     mainHandler();
   }
 };

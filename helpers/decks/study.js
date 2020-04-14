@@ -1,20 +1,17 @@
+const inquirer = require("inquirer");
+const chalk = require("chalk");
+
 const studyMenu = {
   type: "list",
   name: "menuOptions",
+  message: chalk.gray("Options"),
   choices: [
+    new inquirer.Separator(),
     "View Notes",
     "View Solution",
-    "Edit Notes",
-    "Edit Solution",
-    "Back",
+    new inquirer.Separator(),
+    chalk.gray("Back to Deck"),
   ],
 };
 
-const nextProblem = {
-  type: "list",
-  message: "Next problem?",
-  name: "choice",
-  choices: ["Next", "Back"],
-};
-
-module.exports = { studyMenu, nextProblem };
+module.exports = { studyMenu };

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 mongoose.set("useCreateIndex", true);
+const stripAnsi = require("strip-ansi");
 const Problem = require("../models/problems");
 const Deck = require("../models/decks");
 const Review = require("../models/review");
@@ -90,7 +91,7 @@ const retrieve = async (title, type) => {
   let mongo_promise = null;
   if (type == "Deck") {
     mongo_promise = await Deck.findOne({
-      title: title,
+      title: stripAnsi(title),
     })
       .then()
       .catch((err) =>
@@ -98,7 +99,7 @@ const retrieve = async (title, type) => {
       );
   } else if (type == "Problem") {
     mongo_promise = await Problem.findOne({
-      title: title,
+      title: stripAnsi(title),
     })
       .then()
       .catch((err) =>
@@ -301,7 +302,7 @@ const destroy = async (title, type) => {
   let mongo_promise = null;
   if (type == "Deck") {
     mongo_promise = await Deck.deleteOne({
-      title: title,
+      title: stripAnsi(title),
     })
       .then()
       .catch((err) =>
@@ -309,7 +310,7 @@ const destroy = async (title, type) => {
       );
   } else if (type == "Problem") {
     mongo_promise = await Problem.deleteOne({
-      title: title,
+      title: stripAnsi(title),
     })
       .then()
       .catch((err) =>

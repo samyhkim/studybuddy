@@ -1,26 +1,35 @@
 const inquirer = require("inquirer");
+const chalk = require("chalk");
+const stripAnsi = require("strip-ansi");
 const { addNoteToProblem, addSolutionToProblem } = require("../../config/db");
 const { studyMenu } = require("../../helpers/decks/study");
-const { rateHandler } = require("../rate");
-const { rateProblem } = require("../../helpers/rate");
+const { rateHandler } = require("./rate");
+const { rateNotes, rateSolution } = require("../../helpers/decks/rate");
 const { getProblem, openHandler } = require("../decks/open");
 
-/*
-DONE: Should "back" be the previous problem or the previous menu?
-*/
-
-const view = async (deck, problem, type) => {
-  if (type == "Notes") {
-    console.log(problem.notes);
-  } else if (type == "Solution") {
-    console.log(problem.solution);
-  }
-  const answer = await inquirer.prompt(rateProblem);
+const viewNotes = async (deck, problem) => {
+  console.log(chalk.red(problem.notes));
+  const answer = await inquirer.prompt(rateNotes);
   if (answer.choice == "Back") {
     studyHandler(problem);
+  } else if (answer.choice == "Edit Notes") {
+    editNotes(problem);
   } else {
     await rateHandler(deck, problem, answer.choice);
-    getProblem();
+    getProblem(deck);
+  }
+};
+
+const viewSolution = async (deck, problem) => {
+  console.log(chalk.red(problem.solution));
+  const answer = await inquirer.prompt(rateSolution);
+  if (answer.choice == "Back") {
+    studyHandler(problem);
+  } else if (answer.choice == "Edit Solution") {
+    editSolution(problem);
+  } else {
+    await rateHandler(deck, problem, answer.choice);
+    getProblem(deck);
   }
 };
 
@@ -47,20 +56,16 @@ const editSolution = async (problem) => {
 };
 
 const studyHandler = async (deck, problem) => {
-  console.log(problem.title);
+  console.log(chalk.bold.underline.yellow(problem.title));
   console.log(problem.prompt);
+
   const answer = await inquirer.prompt(studyMenu);
-  if (
-    answer.menuOptions == "View Notes" ||
-    answer.menuOptions == "View Solution"
-  ) {
-    view(deck, problem, answer.menuOptions);
-  } else if (answer.menuOptions == "Edit Notes") {
-    editNotes(problem);
-  } else if (answer.menuOptions == "Edit Solution") {
-    editSolution(problem);
-  } else if (answer.menuOptions == "Back") {
-    openHandler();
+  if (answer.menuOptions == "View Notes") {
+    viewNotes(deck, problem);
+  } else if (answer.menuOptions == "View Solution") {
+    viewSolution(deck, problem);
+  } else if (answer.menuOptions == chalk.gray("Back to Deck")) {
+    openHandler(deck);
   }
 };
 

@@ -1,4 +1,5 @@
 const inquirer = require("inquirer");
+const chalk = require("chalk");
 const { mainMenu } = require("../helpers/index");
 
 const mainHandler = async () => {
@@ -7,6 +8,8 @@ const mainHandler = async () => {
     deckHandler();
   } else if (answer.menuOptions == "💡 Problems") {
     problemHandler();
+  } else if (answer.menuOptions == chalk.gray("Exit")) {
+    process.exit();
   }
 };
 

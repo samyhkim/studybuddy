@@ -1,5 +1,5 @@
-const SRM = require("../config/algo");
-const { addProblemToReview, updateProblemDueDate } = require("../config/db");
+const SRM = require("../../config/algo");
+const { addProblemToReview, updateProblemDueDate } = require("../../config/db");
 
 /*
 TODO: how to handle problem progress update?

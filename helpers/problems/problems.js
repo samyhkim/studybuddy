@@ -5,25 +5,29 @@ const { list } = require("../../config/db");
 const problemMenu = {
   type: "list",
   name: "menuOptions",
-  message: chalk.green.bold("💡 Problems"),
+  message: chalk.cyan.bold("💡 Problem Menu"),
   choices: [
     new inquirer.Separator(),
-    "Start",
+    chalk.green("Start"),
     "View All",
     "Add",
     "Remove",
     new inquirer.Separator(),
-    "Back to Main Menu",
+    chalk.gray("Back to Main Menu"),
   ],
 };
 
 const getViewProblems = async () => {
   const problems = await list("Problem");
+  problems.forEach(
+    (problem, index, coloredProblems) =>
+      (coloredProblems[index] = chalk.bold.yellow(problem))
+  );
   const choices = [new inquirer.Separator(), "Back", new inquirer.Separator()];
   return {
     type: "list",
     name: "choice",
-    message: "Your problems:",
+    message: chalk.gray("Your problems:"),
     choices: () => choices.concat(problems),
   };
 };
@@ -77,6 +81,10 @@ const addNotes = [
 
 const getRemoveProblem = async () => {
   const problems = await list("Problem");
+  problems.forEach(
+    (problem, index, coloredProblems) =>
+      (coloredProblems[index] = chalk.bold.yellow(problem))
+  );
   const choices = [new inquirer.Separator(), "Back", new inquirer.Separator()];
   return [
     {

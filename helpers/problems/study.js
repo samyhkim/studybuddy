@@ -1,20 +1,43 @@
+const inquirer = require("inquirer");
+const chalk = require("chalk");
+
 const studyMenu = {
   type: "list",
   name: "menuOptions",
+  message: chalk.gray("Options"),
   choices: [
-    "View Notes",
+    new inquirer.Separator(),
     "View Solution",
-    "Edit Notes",
-    "Edit Solution",
-    "Back",
+    "View Notes",
+    new inquirer.Separator(),
+    chalk.gray("Back to Problems"),
   ],
 };
 
-const nextProblem = {
+const nextNotes = {
   type: "list",
-  message: "Next problem?",
+  message: chalk.gray("Next problem?"),
   name: "choice",
-  choices: ["Next", "Back"],
+  choices: [
+    new inquirer.Separator(),
+    chalk.green("Next"),
+    "Edit Notes",
+    new inquirer.Separator(),
+    chalk.gray("Back to Problem"),
+  ],
 };
 
-module.exports = { studyMenu, nextProblem };
+const nextSolution = {
+  type: "list",
+  message: chalk.gray("Next problem?"),
+  name: "choice",
+  choices: [
+    new inquirer.Separator(),
+    chalk.green("Next"),
+    "Edit Solution",
+    new inquirer.Separator(),
+    chalk.gray("Back to Problem"),
+  ],
+};
+
+module.exports = { studyMenu, nextNotes, nextSolution };
