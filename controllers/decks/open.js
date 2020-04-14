@@ -41,6 +41,7 @@ const getProblem = async (deck) => {
 
 const viewReview = async (deck) => {
   const problems = await listReview(deck._id);
+
   if (problems.length === 0) {
     console.log(
       chalk.rgb(255, 136, 0).bold("There are no problems in the review queue.")
@@ -65,13 +66,17 @@ const viewProblems = async (deck) => {
 const addProblem = async (deck) => {
   let answer = await inquirer.prompt(askExisting);
   let problem = null;
+
   if (answer.choice) {
     problem = await addExisting();
   } else {
     problem = await addNew();
   }
+
   await createJoin(deck._id, problem._id);
+
   answer = await inquirer.prompt(askAgain);
+
   if (answer.choice) {
     addProblem(deck);
   } else {
@@ -111,5 +116,4 @@ const openHandler = async (deck) => {
 };
 
 module.exports = { getProblem, openHandler };
-
 const { studyHandler } = require("./study");

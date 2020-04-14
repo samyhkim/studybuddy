@@ -25,7 +25,6 @@ const viewProblems = async () => {
     problemHandler();
   } else {
     const problem = await retrieve(answer.choice, "Problem");
-
     studyHandler(problem);
   }
 };
@@ -76,5 +75,4 @@ const problemHandler = async () => {
 };
 
 module.exports = { problemHandler };
-
 const { studyHandler } = require("./study");

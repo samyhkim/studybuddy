@@ -15,6 +15,7 @@ const { problemHandler } = require("./problems");
 const viewSolution = async (problem) => {
   console.log(chalk.red(problem.solution));
   const answer = await inquirer.prompt(nextSolution);
+
   if (answer.choice == "Next") {
     const problem = await getRandom();
     studyHandler(problem[0]);
@@ -28,6 +29,7 @@ const viewSolution = async (problem) => {
 const viewNotes = async (problem) => {
   console.log(chalk.red(problem.notes));
   const answer = await inquirer.prompt(nextNotes);
+
   if (answer.choice == chalk.green("Next")) {
     const problem = await getRandom();
     studyHandler(problem[0]);
@@ -45,7 +47,9 @@ const editSolution = async (problem) => {
     message: "Edit this problem's solution.",
     default: problem.solution,
   });
+
   const updatedProblem = await addSolutionToProblem(problem._id, answer);
+
   studyHandler(updatedProblem);
 };
 
@@ -56,7 +60,9 @@ const editNotes = async (problem) => {
     message: "Edit this problem's notes.",
     default: problem.notes,
   });
+
   const updatedProblem = await addNoteToProblem(problem._id, answer);
+
   studyHandler(updatedProblem);
 };
 

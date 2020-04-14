@@ -10,6 +10,7 @@ const { getProblem, openHandler } = require("../decks/open");
 const viewNotes = async (deck, problem) => {
   console.log(chalk.red(problem.notes));
   const answer = await inquirer.prompt(rateNotes);
+
   if (answer.choice == "Back") {
     studyHandler(problem);
   } else if (answer.choice == "Edit Notes") {
@@ -23,6 +24,7 @@ const viewNotes = async (deck, problem) => {
 const viewSolution = async (deck, problem) => {
   console.log(chalk.red(problem.solution));
   const answer = await inquirer.prompt(rateSolution);
+
   if (answer.choice == "Back") {
     studyHandler(problem);
   } else if (answer.choice == "Edit Solution") {
@@ -40,7 +42,9 @@ const editNotes = async (problem) => {
     message: "Edit this problem's notes.",
     default: problem.notes,
   });
+
   await addNoteToProblem(problem._id, answer);
+
   studyHandler(problem);
 };
 
@@ -51,7 +55,9 @@ const editSolution = async (problem) => {
     message: "Edit this problem's solution.",
     default: problem.solution,
   });
+
   await addSolutionToProblem(problem._id, answer);
+
   studyHandler(problem);
 };
 

@@ -32,7 +32,6 @@ const viewDecks = async () => {
     deckHandler();
   } else {
     const deck = await retrieve(answer.choice, "Deck");
-
     openHandler(deck);
   }
 };
@@ -67,5 +66,4 @@ const deckHandler = async () => {
 };
 
 module.exports = { deckHandler };
-
 const { openHandler } = require("./open");
