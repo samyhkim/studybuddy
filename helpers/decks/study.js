@@ -7,8 +7,8 @@ const studyMenu = {
   message: chalk.gray("Options"),
   choices: [
     new inquirer.Separator(),
-    "View Notes",
     "View Solution",
+    "View Notes",
     new inquirer.Separator(),
     chalk.gray("Back to Deck"),
   ],

@@ -2,7 +2,9 @@ const inquirer = require("inquirer");
 const chalk = require("chalk");
 const {
   getOpenMenu,
+  getViewReview,
   getViewProblems,
+  getReviewProblems,
   getRemoveProblem,
   addExisting,
   addNew,
@@ -14,17 +16,29 @@ const {
   retrieve,
   getRandomFromDeck,
   removeJoin,
-  listReview,
+  removeProblemFromReview,
 } = require("../../config/db");
 const { deckHandler } = require("./decks");
 
 /*
 addExisting
-TODO: check for duplicate add
+DONE: check for duplicate add; we keep passing the same deck over and over so problems array doesnt update
+      which means that when deck is empty, we can add the same problem over and over again
+      or if we delete problem and try to add it again, the deck will think that it still has it
+
+getProblem
+DONE: viewProblem does not return titles so listReview is starting undefined problem
+
+viewReview
+DONE: return problem titles, currently returning review object (deckId, problemId, dueDate)
+
+removeProblem
+FIXME: removed problem should be removed from queue
+      kind of works, removed one but others remain
 */
 
 const getProblem = async (deck) => {
-  let problems = await listReview(deck._id);
+  let problems = await getReviewProblems(deck);
 
   if (problems.length > 0) {
     studyHandler(deck, problems[0]);
@@ -33,22 +47,24 @@ const getProblem = async (deck) => {
     if (problem) {
       studyHandler(deck, problem);
     } else {
-      console.log("There are no problems in your deck.");
+      console.log(
+        chalk.rgb(255, 136, 0).bold("There are no problems in your deck.")
+      );
       openHandler(deck);
     }
   }
 };
 
 const viewReview = async (deck) => {
-  const problems = await listReview(deck._id);
+  const problems = await getViewReview(deck);
+  const answer = await inquirer.prompt(problems);
 
-  if (problems.length === 0) {
-    console.log(
-      chalk.rgb(255, 136, 0).bold("There are no problems in the review queue.")
-    );
+  if (answer.choice == "Back") {
+    openHandler(deck);
+  } else {
+    const problem = await retrieve(answer.choice, "Problem");
+    studyHandler(deck, problem);
   }
-
-  openHandler(deck);
 };
 
 const viewProblems = async (deck) => {
@@ -73,7 +89,11 @@ const addProblem = async (deck) => {
     problem = await addNew();
   }
 
-  await createJoin(deck._id, problem._id);
+  if (deck.problems.includes(problem._id)) {
+    console.log(chalk.rgb(255, 136, 0).bold("Problem already is in deck."));
+  } else {
+    deck = await createJoin(deck._id, problem._id);
+  }
 
   answer = await inquirer.prompt(askAgain);
 
@@ -90,7 +110,8 @@ const removeProblem = async (deck) => {
 
   if (answer.confirm) {
     const problem = await retrieve(answer.choice, "Problem");
-    await removeJoin(deck._id, problem._id);
+    deck = await removeJoin(deck._id, problem._id);
+    await removeProblemFromReview(deck._id, problem._id);
   }
 
   openHandler(deck);

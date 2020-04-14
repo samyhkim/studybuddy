@@ -1,6 +1,5 @@
 const inquirer = require("inquirer");
 const chalk = require("chalk");
-const stripAnsi = require("strip-ansi");
 const { addNoteToProblem, addSolutionToProblem } = require("../../config/db");
 const { studyMenu } = require("../../helpers/decks/study");
 const { rateHandler } = require("./rate");
@@ -14,7 +13,7 @@ const viewNotes = async (deck, problem) => {
   if (answer.choice == "Back") {
     studyHandler(problem);
   } else if (answer.choice == "Edit Notes") {
-    editNotes(problem);
+    editNotes(deck, problem);
   } else {
     await rateHandler(deck, problem, answer.choice);
     getProblem(deck);
@@ -28,14 +27,14 @@ const viewSolution = async (deck, problem) => {
   if (answer.choice == "Back") {
     studyHandler(problem);
   } else if (answer.choice == "Edit Solution") {
-    editSolution(problem);
+    editSolution(deck, problem);
   } else {
     await rateHandler(deck, problem, answer.choice);
     getProblem(deck);
   }
 };
 
-const editNotes = async (problem) => {
+const editNotes = async (deck, problem) => {
   const answer = await inquirer.prompt({
     type: "editor",
     name: "notes",
@@ -43,12 +42,13 @@ const editNotes = async (problem) => {
     default: problem.notes,
   });
 
-  await addNoteToProblem(problem._id, answer);
+  const updatedProblem = await addNoteToProblem(problem._id, answer);
+  console.log(updatedProblem);
 
-  studyHandler(problem);
+  studyHandler(deck, updatedProblem);
 };
 
-const editSolution = async (problem) => {
+const editSolution = async (deck, problem) => {
   const answer = await inquirer.prompt({
     type: "editor",
     name: "solution",
@@ -56,9 +56,9 @@ const editSolution = async (problem) => {
     default: problem.solution,
   });
 
-  await addSolutionToProblem(problem._id, answer);
+  const updatedProblem = await addSolutionToProblem(problem._id, answer);
 
-  studyHandler(problem);
+  studyHandler(deck, updatedProblem);
 };
 
 const studyHandler = async (deck, problem) => {

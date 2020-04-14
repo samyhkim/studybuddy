@@ -1,8 +1,12 @@
 const SRM = require("../../config/algo");
-const { addProblemToReview, updateProblemDueDate } = require("../../config/db");
+const {
+  addProblemToReview,
+  updateProblemDueDate,
+  updateProblemProgress,
+} = require("../../config/db");
 
 /*
-TODO: how to handle problem progress update?
+DONE: how to handle problem progress update?
 */
 
 const rateHandler = async (deck, problem, answer) => {
@@ -16,10 +20,12 @@ const rateHandler = async (deck, problem, answer) => {
       .then(() => console.log("Added to review."))
       .catch((err) => console.log(err));
   } else {
+    // TODO: still haven't tested updateProblemDueDate
     await updateProblemDueDate(deck._id, problem._id, newInfo.dueDate)
       .then(() => console.log("Review updated."))
       .catch((err) => console.log(err));
   }
+  await updateProblemProgress(problem._id, newInfo.progress);
 };
 
 module.exports = { rateHandler };

@@ -4,6 +4,8 @@ const {
   create,
   list,
   retrieve,
+  retrieveProblemById,
+  listReview,
   getDeckWithProblems,
 } = require("../../config/db");
 
@@ -23,6 +25,41 @@ const getOpenMenu = async (deck) => {
       chalk.gray("Back to Decks"),
     ],
   };
+};
+
+const getViewReview = async (deck) => {
+  const titles = await getReviewTitles(deck);
+  titles.forEach(
+    (title, index, coloredTitles) =>
+      (coloredTitles[index] = chalk.bold.yellow(title))
+  );
+  const choices = [new inquirer.Separator(), "Back", new inquirer.Separator()];
+  return {
+    type: "list",
+    name: "choice",
+    message: chalk.gray("Review queue:"),
+    choices: () => choices.concat(titles),
+  };
+};
+
+const getReviewTitles = async (deck) => {
+  const reviewProblems = await listReview(deck._id);
+  const titles = [];
+  for (let index = 0; index < reviewProblems.length; index++) {
+    const title = await retrieveProblemById(reviewProblems[index].problem);
+    titles.push(title.title);
+  }
+  return titles;
+};
+
+const getReviewProblems = async (deck) => {
+  const reviewProblems = await listReview(deck._id);
+  const problems = [];
+  for (let index = 0; index < reviewProblems.length; index++) {
+    const problem = await retrieveProblemById(reviewProblems[index].problem);
+    problems.push(problem);
+  }
+  return problems;
 };
 
 const getViewProblems = async (deck) => {
@@ -171,7 +208,10 @@ const addNotes = [
 
 module.exports = {
   getOpenMenu,
+  getViewReview,
   getViewProblems,
+  getReviewTitles,
+  getReviewProblems,
   getRemoveProblem,
   askExisting,
   addExisting,

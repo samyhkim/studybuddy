@@ -48,8 +48,9 @@ const create = async (body, type) => {
 };
 
 const createJoin = async (deckId, problemId) => {
-  await addProblemToDeck(deckId, problemId);
+  const deck = await addProblemToDeck(deckId, problemId);
   await addDeckToProblem(problemId, deckId);
+  return deck;
 };
 
 /*
@@ -124,6 +125,13 @@ const getThreeTitles = async () => {
     results.push(result.title);
   });
   return results;
+};
+
+const retrieveProblemById = async (problemId) => {
+  await dbConnect();
+  const mongo_promise = await Problem.findById(problemId);
+  await dbClose();
+  return mongo_promise;
 };
 
 const getRandom = async () => {
@@ -383,8 +391,9 @@ const removeDeckFromProblem = async (problemId, deckId) => {
 };
 
 const removeJoin = async (deckId, problemId) => {
-  await removeProblemFromDeck(deckId, problemId);
+  deck = await removeProblemFromDeck(deckId, problemId);
   await removeDeckFromProblem(problemId, deckId);
+  return deck;
 };
 
 /*
@@ -416,12 +425,18 @@ const listReview = async (deckId) => {
   const today = Math.round(new Date().getTime() / DAY_IN_MILLISECONDS);
   const mongo_promise = await Review.find({
     deck: { $eq: deckId },
-    dueDate: { $lte: today },
+    dueDate: { $gte: today },
   })
     .then()
     .catch((err) =>
       console.error("listReview: Error while retrieving review problems.", err)
     );
+  // const results = [];
+  // mongo_promise.forEach((result) => {
+  //   results.push(result.title);
+  // });
+  // await dbClose();
+  // return results;
   await dbClose();
   return mongo_promise;
 };
@@ -454,6 +469,48 @@ const updateProblemDueDate = async (deckId, problemId, dueDate) => {
   return mongo_promise;
 };
 
+const updateProblemProgress = async (problemId, progress) => {
+  await dbConnect();
+  const mongo_promise = await Problem.findByIdAndUpdate(
+    problemId,
+    {
+      $set: {
+        progress: progress,
+      },
+    },
+    {
+      new: true,
+      useFindAndModify: false,
+    }
+  )
+    .then()
+    .catch((err) =>
+      console.error(
+        "addNoteToProblem: Error while changing problem's progress.",
+        err
+      )
+    );
+  await dbClose();
+  return mongo_promise;
+};
+
+const removeProblemFromReview = async (deckId, problemId) => {
+  await dbConnect();
+  const mongo_promise = await Review.findOneAndDelete({
+    deck: { $eq: deckId },
+    problem: { $eq: problemId },
+  })
+    .then()
+    .catch((err) =>
+      console.error(
+        "removeProblemFromReview: Error while removing problem from review.",
+        err
+      )
+    );
+  await dbClose();
+  return mongo_promise;
+};
+
 module.exports = {
   create,
   createJoin,
@@ -462,6 +519,7 @@ module.exports = {
   list,
   retrieve,
   getThreeTitles,
+  retrieveProblemById,
   getRandom,
   getRandomFromDeck,
   getDeckWithProblems,
@@ -471,4 +529,6 @@ module.exports = {
   addProblemToReview,
   listReview,
   updateProblemDueDate,
+  updateProblemProgress,
+  removeProblemFromReview,
 };
