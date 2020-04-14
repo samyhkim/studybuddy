@@ -33,7 +33,7 @@ viewReview
 DONE: return problem titles, currently returning review object (deckId, problemId, dueDate)
 
 removeProblem
-FIXME: removed problem should be removed from queue
+DONE: removed problem should be removed from queue
       kind of works, removed one but others remain
 */
 

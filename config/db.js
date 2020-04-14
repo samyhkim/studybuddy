@@ -419,24 +419,28 @@ const addProblemToReview = async (deckId, problemId, dueDate) => {
   return mongo_promise;
 };
 
+const getProblemFromReview = async (deckId, problemId) => {
+  await dbConnect();
+  const mongo_promise = await Review.findOne({
+    deck: { $eq: deckId },
+    problem: { $eq: problemId },
+  });
+  await dbClose();
+  return mongo_promise;
+};
+
 const listReview = async (deckId) => {
   await dbConnect();
   const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
   const today = Math.round(new Date().getTime() / DAY_IN_MILLISECONDS);
   const mongo_promise = await Review.find({
     deck: { $eq: deckId },
-    dueDate: { $gte: today },
+    dueDate: { $lte: today },
   })
     .then()
     .catch((err) =>
       console.error("listReview: Error while retrieving review problems.", err)
     );
-  // const results = [];
-  // mongo_promise.forEach((result) => {
-  //   results.push(result.title);
-  // });
-  // await dbClose();
-  // return results;
   await dbClose();
   return mongo_promise;
 };
@@ -527,6 +531,7 @@ module.exports = {
   destroyById,
   removeJoin,
   addProblemToReview,
+  getProblemFromReview,
   listReview,
   updateProblemDueDate,
   updateProblemProgress,
