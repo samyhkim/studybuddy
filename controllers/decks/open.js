@@ -20,23 +20,6 @@ const {
 } = require("../../config/db");
 const { deckHandler } = require("./decks");
 
-/*
-addExisting
-DONE: check for duplicate add; we keep passing the same deck over and over so problems array doesnt update
-      which means that when deck is empty, we can add the same problem over and over again
-      or if we delete problem and try to add it again, the deck will think that it still has it
-
-getProblem
-DONE: viewProblem does not return titles so listReview is starting undefined problem
-
-viewReview
-DONE: return problem titles, currently returning review object (deckId, problemId, dueDate)
-
-removeProblem
-DONE: removed problem should be removed from queue
-      kind of works, removed one but others remain
-*/
-
 const getProblem = async (deck) => {
   let problems = await getReviewProblems(deck);
 
