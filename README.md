@@ -10,13 +10,26 @@ npm install -global studybuddy
 
 ## Usage
 
-```python
-import foobar
-
-foobar.pluralize('word') # returns 'words'
-foobar.pluralize('goose') # returns 'geese'
-foobar.singularize('phenomena') # returns 'phenomenon'
+```bash
+studybuddy
 ```
+arrow keys: cycle through options
+enter/return: select option
+ctrl-c: exit program
+
+Using the editor:
+1. Press "i" to enable "insert mode".
+2. Text's format will be saved as inputted.
+3. Press "ctrl-c" to enable editor's command prompt.
+4. Type ":wq" to save and exit.
+
+## Decks
+Create decks and populate them with problems.
+*pic*
+Rate each problem by their difficulty and try them again another day.
+*pic*
+Starting a deck will grab a problem from the deck's review queue.
+If the review queue is empty, the deck will grab any random problem from its list of problems.
 
 ## Contributing
 
