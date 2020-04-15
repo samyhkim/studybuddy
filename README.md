@@ -19,7 +19,7 @@ studybuddy
 `return`: select option
 `ctrl-c`: exit program
 
-#### Using the editor:
+#### Using the Editor
 1. Press `i` to enable "insert mode".
 2. Text's format will be saved as inputted.
 3. Press `ctrl-c"` to enable editor's command prompt.
