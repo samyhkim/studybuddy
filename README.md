@@ -16,7 +16,9 @@ studybuddy
 
 #### Navigating StudyBuddy
 `arrow keys`: cycle through options
+
 `return`: select option
+
 `ctrl-c`: exit program
 
 #### Using the Editor
