@@ -1,5 +1,8 @@
 {
-  "name": "studybuddy-cli",
+  "bin": {
+    "studybuddy": "./index.js"
+  },
+  "name": "studybuddy",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,7 +14,6 @@
   "license": "ISC",
   "dependencies": {
     "chalk": "^4.0.0",
-    "commander": "^5.0.0",
     "inquirer": "^7.1.0",
     "mongoose": "^5.9.7",
     "strip-ansi": "^6.0.0"
