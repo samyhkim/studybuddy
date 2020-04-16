@@ -1,6 +1,6 @@
 const inquirer = require("inquirer");
 const chalk = require("chalk");
-const { create, retrieve, destroy } = require("../../config/db");
+const { create, retrieveByTitle, destroyByTitle } = require("../../config/db");
 const {
   getDeckMenu,
   getViewDeck,
@@ -10,7 +10,7 @@ const {
 const { mainHandler } = require("../index");
 
 const openDeck = async (title) => {
-  const deck = await retrieve(title, "Deck");
+  const deck = await retrieveByTitle(title, "Deck");
 
   openHandler(deck);
 };
@@ -31,7 +31,7 @@ const viewDecks = async () => {
   if (answer.choice == "Back") {
     deckHandler();
   } else {
-    const deck = await retrieve(answer.choice, "Deck");
+    const deck = await retrieveByTitle(answer.choice, "Deck");
     openHandler(deck);
   }
 };
@@ -41,7 +41,7 @@ const removeDeck = async () => {
   const answer = await inquirer.prompt(decks);
 
   if (answer.confirm) {
-    const response = await destroy(answer.choice, "Deck");
+    const response = await destroyByTitle(answer.choice, "Deck");
     console.log(response);
   }
 

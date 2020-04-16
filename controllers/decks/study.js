@@ -42,7 +42,7 @@ const editNotes = async (deck, problem) => {
     default: problem.notes,
   });
 
-  const updatedProblem = await addNoteToProblem(problem._id, answer);
+  const updatedProblem = await addNoteToProblem(problem._id, answer.notes);
   console.log(updatedProblem);
 
   studyHandler(deck, updatedProblem);
@@ -56,7 +56,10 @@ const editSolution = async (deck, problem) => {
     default: problem.solution,
   });
 
-  const updatedProblem = await addSolutionToProblem(problem._id, answer);
+  const updatedProblem = await addSolutionToProblem(
+    problem._id,
+    answer.solution
+  );
 
   studyHandler(deck, updatedProblem);
 };

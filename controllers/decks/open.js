@@ -13,7 +13,7 @@ const {
 } = require("../../helpers/decks/open");
 const {
   createJoin,
-  retrieve,
+  retrieveByTitle,
   getRandomFromDeck,
   removeJoin,
   removeProblemFromReview,
@@ -45,7 +45,7 @@ const viewReview = async (deck) => {
   if (answer.choice == "Back") {
     openHandler(deck);
   } else {
-    const problem = await retrieve(answer.choice, "Problem");
+    const problem = await retrieveByTitle(answer.choice, "Problem");
     studyHandler(deck, problem);
   }
 };
@@ -57,7 +57,7 @@ const viewProblems = async (deck) => {
   if (answer.choice == "Back") {
     openHandler(deck);
   } else {
-    const problem = await retrieve(answer.choice, "Problem");
+    const problem = await retrieveByTitle(answer.choice, "Problem");
     studyHandler(deck, problem);
   }
 };
@@ -92,7 +92,7 @@ const removeProblem = async (deck) => {
   const answer = await inquirer.prompt(problems);
 
   if (answer.confirm) {
-    const problem = await retrieve(answer.choice, "Problem");
+    const problem = await retrieveByTitle(answer.choice, "Problem");
     deck = await removeJoin(deck._id, problem._id);
     await removeProblemFromReview(deck._id, problem._id);
   }

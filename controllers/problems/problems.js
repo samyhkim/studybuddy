@@ -1,6 +1,11 @@
 const inquirer = require("inquirer");
 const chalk = require("chalk");
-const { create, retrieve, getRandom, destroy } = require("../../config/db");
+const {
+  create,
+  retrieveByTitle,
+  getRandom,
+  destroyByTitle,
+} = require("../../config/db");
 const {
   problemMenu,
   getViewProblems,
@@ -24,7 +29,7 @@ const viewProblems = async () => {
   if (answer.choice == "Back") {
     problemHandler();
   } else {
-    const problem = await retrieve(answer.choice, "Problem");
+    const problem = await retrieveByTitle(answer.choice, "Problem");
     studyHandler(problem);
   }
 };
@@ -52,7 +57,7 @@ const removeProblem = async () => {
   const answer = await inquirer.prompt(problems);
 
   if (answer.confirm) {
-    await destroy(answer.choice, "Problem");
+    await destroyByTitle(answer.choice, "Problem");
   }
 
   problemHandler();

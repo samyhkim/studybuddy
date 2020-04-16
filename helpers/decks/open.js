@@ -3,7 +3,7 @@ const chalk = require("chalk");
 const {
   create,
   list,
-  retrieve,
+  retrieveByTitle,
   retrieveProblemById,
   listReview,
   getDeckWithProblems,
@@ -120,7 +120,7 @@ const getAddExisting = async () => {
 const addExisting = async () => {
   const problems = await getAddExisting();
   const answer = await inquirer.prompt(problems);
-  const problem = await retrieve(answer.choice, "Problem");
+  const problem = await retrieveByTitle(answer.choice, "Problem");
   return problem;
 };
 

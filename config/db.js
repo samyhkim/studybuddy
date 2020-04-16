@@ -25,8 +25,9 @@ const dbClose = async () => {
 
 /*
 --------------------------CREATE--------------------------
-create() - create new deck or problem
-createJoin() - create (deck, problem) association
+create(body, type) - create new deck or problem
+createJoin(deckId, problemId) - create (deck, problem) association
+addProblemToReview(deckId, problemId, dueDate) - add (deck, problem, dueDate) to Review
 */
 
 const create = async (body, type) => {
@@ -53,14 +54,32 @@ const createJoin = async (deckId, problemId) => {
   return deck;
 };
 
+const addProblemToReview = async (deckId, problemId, dueDate) => {
+  const body = { deckId: deckId, problemId: problemId, dueDate: dueDate };
+  await dbConnect();
+  const mongo_promise = await Review.create(body)
+    .then()
+    .catch((err) =>
+      console.error(
+        "addProblemToReview: Error while adding problem to review.",
+        err
+      )
+    );
+  await dbClose();
+  return mongo_promise;
+};
+
 /*
 --------------------------READ--------------------------
-list() - get all deck or problem documents
-retrieve() - get one matching document by title
+list(type) - get all deck or problem documents
+retrieveByTitle(title, type) - get one matching document by title
+retrieveProblemById(problemId) - get one matching problem by id
 getThreeTitles() - get title of first 3 documents
 getRandom() - get random problem
-getRandomFromDeck() - get random problem from deck
-getDeckWithProblems() - get all problems of deck
+getRandomFromDeck(deckId) - get random problem from deck
+getDeckWithProblems(deckId) - get all problems of deck
+listReview(deckId) - get all problems from review that are overdue and due today
+getProblemFromReview(deckId, problemId) - get matching problem in deck's review queue
 */
 
 const list = async (type) => {
@@ -87,7 +106,7 @@ const list = async (type) => {
   return results;
 };
 
-const retrieve = async (title, type) => {
+const retrieveByTitle = async (title, type) => {
   await dbConnect();
   let mongo_promise = null;
   if (type == "Deck") {
@@ -96,7 +115,7 @@ const retrieve = async (title, type) => {
     })
       .then()
       .catch((err) =>
-        console.error("retrieve: Error while retrieving deck.", err)
+        console.error("retrieveByTitle: Error while retrieving deck.", err)
       );
   } else if (type == "Problem") {
     mongo_promise = await Problem.findOne({
@@ -104,9 +123,20 @@ const retrieve = async (title, type) => {
     })
       .then()
       .catch((err) =>
-        console.error("retrieve: Error while retrieving problem.", err)
+        console.error("retrieveByTitle: Error while retrieving problem.", err)
       );
   }
+  await dbClose();
+  return mongo_promise;
+};
+
+const retrieveProblemById = async (problemId) => {
+  await dbConnect();
+  const mongo_promise = await Problem.findById(problemId)
+    .then()
+    .catch((err) =>
+      console.error("retrieveProblemById: Error while retrieving problem.", err)
+    );
   await dbClose();
   return mongo_promise;
 };
@@ -125,13 +155,6 @@ const getThreeTitles = async () => {
     results.push(result.title);
   });
   return results;
-};
-
-const retrieveProblemById = async (problemId) => {
-  await dbConnect();
-  const mongo_promise = await Problem.findById(problemId);
-  await dbClose();
-  return mongo_promise;
 };
 
 const getRandom = async () => {
@@ -188,12 +211,47 @@ const getDeckWithProblems = async (deckId) => {
   return results;
 };
 
+const listReview = async (deckId) => {
+  await dbConnect();
+  const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
+  const today = Math.round(new Date().getTime() / DAY_IN_MILLISECONDS);
+  const mongo_promise = await Review.find({
+    deckId: { $eq: deckId },
+    dueDate: { $lte: today },
+  })
+    .then()
+    .catch((err) =>
+      console.error("listReview: Error while retrieving review problems.", err)
+    );
+  await dbClose();
+  return mongo_promise;
+};
+
+const getProblemFromReview = async (deckId, problemId) => {
+  await dbConnect();
+  const mongo_promise = await Review.findOne({
+    deckId: { $eq: deckId },
+    problemId: { $eq: problemId },
+  })
+    .then()
+    .catch((err) =>
+      console.error(
+        "getProblemFromReview: Error while retrieving review problem.",
+        err
+      )
+    );
+  await dbClose();
+  return mongo_promise;
+};
+
 /*
 --------------------------UPDATE--------------------------
-addProblemToDeck() - add problem association to deck
-addDeckToProblem() - add deck association to problem
-addNoteToProblem() - add note to problem
-addSolutionToProblem() - add solution to problem
+addProblemToDeck(deckId, problemId) - add problem association to deck
+addDeckToProblem(problemId, deckId) - add deck association to problem
+addNoteToProblem(problemId, notes) - add note to problem
+addSolutionToProblem(problemId, solution) - add solution to problem
+updateProblemDueDate(deckId, problemId, dueDate) - update problem's due date in deck's review queue
+updateProblemProgress(problemId, progress) - update problem's progress
 */
 
 const addProblemToDeck = async (deckId, problemId) => {
@@ -246,13 +304,13 @@ const addDeckToProblem = async (problemId, deckId) => {
   return mongo_promise;
 };
 
-const addNoteToProblem = async (problemId, body) => {
+const addNoteToProblem = async (problemId, notes) => {
   await dbConnect();
   const mongo_promise = await Problem.findByIdAndUpdate(
     problemId,
     {
       $set: {
-        notes: body.notes,
+        notes: notes,
       },
     },
     {
@@ -271,13 +329,13 @@ const addNoteToProblem = async (problemId, body) => {
   return mongo_promise;
 };
 
-const addSolutionToProblem = async (problemId, body) => {
+const addSolutionToProblem = async (problemId, solution) => {
   await dbConnect();
   const mongo_promise = await Problem.findByIdAndUpdate(
     problemId,
     {
       $set: {
-        solution: body.solution,
+        solution: solution,
       },
     },
     {
@@ -296,16 +354,70 @@ const addSolutionToProblem = async (problemId, body) => {
   return mongo_promise;
 };
 
+const updateProblemDueDate = async (deckId, problemId, dueDate) => {
+  await dbConnect();
+  const mongo_promise = await Review.findOneAndUpdate(
+    {
+      deckId: { $eq: deckId },
+      problemId: { $eq: problemId },
+    },
+    {
+      $set: {
+        dueDate: dueDate,
+      },
+    },
+    {
+      new: true,
+      useFindAndModify: false,
+    }
+  )
+    .then()
+    .catch((err) =>
+      console.error(
+        "updateProblemDueDate: Error while updating problem's due date.",
+        err
+      )
+    );
+  await dbClose();
+  return mongo_promise;
+};
+
+const updateProblemProgress = async (problemId, progress) => {
+  await dbConnect();
+  const mongo_promise = await Problem.findByIdAndUpdate(
+    problemId,
+    {
+      $set: {
+        progress: progress,
+      },
+    },
+    {
+      new: true,
+      useFindAndModify: false,
+    }
+  )
+    .then()
+    .catch((err) =>
+      console.error(
+        "updateProblemProgress: Error while changing problem's progress.",
+        err
+      )
+    );
+  await dbClose();
+  return mongo_promise;
+};
+
 /*
 --------------------------DELETE--------------------------
-destroy() - delete deck or problem
-destroyById() - delete problem by id
-removeProblemFromDeck() - remove problem association from deck
-removeDeckFromProblem() - remove deck association from problem
-removeJoin() - remove (deck, problem) association
+destroyByTitle(title, type) - delete deck or problem
+destroyProblemById(problemId) - delete problem by id (not implemented in code base)
+removeProblemFromDeck(deckId, problemId) - remove problem association from deck
+removeDeckFromProblem(problemId, deckId) - remove deck association from problem
+removeJoin(deckId, problemId) - remove (deck, problem) association
+removeProblemFromReview(deckId, problemId) - removes problem from deck's review queue
 */
 
-const destroy = async (title, type) => {
+const destroyByTitle = async (title, type) => {
   await dbConnect();
   let mongo_promise = null;
   if (type == "Deck") {
@@ -314,7 +426,7 @@ const destroy = async (title, type) => {
     })
       .then()
       .catch((err) =>
-        console.error("destroy: Error while adding deleting deck.", err)
+        console.error("destroyByTitle: Error while adding deleting deck.", err)
       );
   } else if (type == "Problem") {
     mongo_promise = await Problem.deleteOne({
@@ -322,19 +434,25 @@ const destroy = async (title, type) => {
     })
       .then()
       .catch((err) =>
-        console.error("destroy: Error while adding deleting problem.", err)
+        console.error(
+          "destroyByTitle: Error while adding deleting problem.",
+          err
+        )
       );
   }
   await dbClose();
   return mongo_promise;
 };
 
-const destroyById = async (problemId) => {
+const destroyProblemById = async (problemId) => {
   await dbConnect();
   const mongo_promise = await Problem.findByIdAndDelete(problemId)
     .then()
     .catch((err) =>
-      console.error("destroy: Error while adding deleting problem.", err)
+      console.error(
+        "destroyProblemById: Error while adding deleting problem.",
+        err
+      )
     );
   await dbClose();
   return mongo_promise;
@@ -396,113 +514,11 @@ const removeJoin = async (deckId, problemId) => {
   return deck;
 };
 
-/*
---------------------------REVIEW--------------------------
-addProblemToReview() - add (deck, problem, dueDate) to Review
-listReviews() - get all problems from review that are overdue and due today
-getNextFromReview() - look at (deck, dueDate) and return if dueDate lte today
-updateProblemQueue() - find matching (deck, problem) and update its dueDate
-*/
-
-const addProblemToReview = async (deckId, problemId, dueDate) => {
-  const body = { deck: deckId, problem: problemId, dueDate: dueDate };
-  await dbConnect();
-  const mongo_promise = await Review.create(body)
-    .then()
-    .catch((err) =>
-      console.error(
-        "addProblemToReview: Error while adding problem to review.",
-        err
-      )
-    );
-  await dbClose();
-  return mongo_promise;
-};
-
-const getProblemFromReview = async (deckId, problemId) => {
-  await dbConnect();
-  const mongo_promise = await Review.findOne({
-    deck: { $eq: deckId },
-    problem: { $eq: problemId },
-  });
-  await dbClose();
-  return mongo_promise;
-};
-
-const listReview = async (deckId) => {
-  await dbConnect();
-  const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
-  const today = Math.round(new Date().getTime() / DAY_IN_MILLISECONDS);
-  const mongo_promise = await Review.find({
-    deck: { $eq: deckId },
-    dueDate: { $lte: today },
-  })
-    .then()
-    .catch((err) =>
-      console.error("listReview: Error while retrieving review problems.", err)
-    );
-  await dbClose();
-  return mongo_promise;
-};
-
-const updateProblemDueDate = async (deckId, problemId, dueDate) => {
-  await dbConnect();
-  const mongo_promise = await Review.findOneAndUpdate(
-    {
-      deck: { $eq: deckId },
-      problem: { $eq: problemId },
-    },
-    {
-      $set: {
-        dueDate: dueDate,
-      },
-    },
-    {
-      new: true,
-      useFindAndModify: false,
-    }
-  )
-    .then()
-    .catch((err) =>
-      console.error(
-        "updateProblemDueDate: Error while updating problem's due date.",
-        err
-      )
-    );
-  await dbClose();
-  return mongo_promise;
-};
-
-const updateProblemProgress = async (problemId, progress) => {
-  await dbConnect();
-  const mongo_promise = await Problem.findByIdAndUpdate(
-    problemId,
-    {
-      $set: {
-        progress: progress,
-      },
-    },
-    {
-      new: true,
-      useFindAndModify: false,
-    }
-  )
-    .then()
-    .catch((err) =>
-      console.error(
-        "addNoteToProblem: Error while changing problem's progress.",
-        err
-      )
-    );
-  await dbClose();
-  return mongo_promise;
-};
-
 const removeProblemFromReview = async (deckId, problemId) => {
   await dbConnect();
   const mongo_promise = await Review.findOneAndDelete({
-    deck: { $eq: deckId },
-    problem: { $eq: problemId },
+    deckId: { $eq: deckId },
+    problemId: { $eq: problemId },
   })
     .then()
     .catch((err) =>
@@ -518,22 +534,21 @@ const removeProblemFromReview = async (deckId, problemId) => {
 module.exports = {
   create,
   createJoin,
-  addNoteToProblem,
-  addSolutionToProblem,
+  addProblemToReview,
   list,
-  retrieve,
-  getThreeTitles,
+  retrieveByTitle,
   retrieveProblemById,
+  getThreeTitles,
   getRandom,
   getRandomFromDeck,
   getDeckWithProblems,
-  destroy,
-  destroyById,
-  removeJoin,
-  addProblemToReview,
-  getProblemFromReview,
   listReview,
+  getProblemFromReview,
+  addNoteToProblem,
+  addSolutionToProblem,
   updateProblemDueDate,
   updateProblemProgress,
+  destroyByTitle,
+  removeJoin,
   removeProblemFromReview,
 };

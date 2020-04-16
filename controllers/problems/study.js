@@ -48,7 +48,10 @@ const editSolution = async (problem) => {
     default: problem.solution,
   });
 
-  const updatedProblem = await addSolutionToProblem(problem._id, answer);
+  const updatedProblem = await addSolutionToProblem(
+    problem._id,
+    answer.solution
+  );
 
   studyHandler(updatedProblem);
 };
@@ -61,7 +64,7 @@ const editNotes = async (problem) => {
     default: problem.notes,
   });
 
-  const updatedProblem = await addNoteToProblem(problem._id, answer);
+  const updatedProblem = await addNoteToProblem(problem._id, answer.notes);
 
   studyHandler(updatedProblem);
 };

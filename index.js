@@ -2,27 +2,27 @@
 const { mainHandler } = require("./controllers/index");
 
 /*
-index
-    |
-    deck______________________
-    |  |        |      |      |
-    |  select   all    add    remove
-    |  |
-    |  start    all    add    remove
-    |  |
-    |  view sol   view note   edit sol   edit note
-    |  |          |
-    |  rate       rate
-    |  |          |
-    |  next       next
-    |
-    problem___________________
-    |  |        |      |      |
-    |  select   all    add    remove
-    |  |
-    |  view sol   view note   edit sol   edit note
-    |  |          |
-    |  next       next
+main
+   |
+   deck______________________
+   |  |        |      |      |
+   |  select   all    add    remove
+   |  |
+   |  start    all    add    remove
+   |  |
+   |  view sol          view note
+   |  |                 |
+   |  rate   edit sol   rate   edit note
+   |
+   problem___________________
+   |  |        |      |      |
+   |  select   all    add    remove
+   |  |
+   |  view sol          view note
+   |  |                 |
+   |  next   edit sol   next   edit note
+   |
+   exit
 */
 
 function main() {

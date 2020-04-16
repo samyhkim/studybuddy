@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
 const reviewSchema = mongoose.Schema({
-  deck: { type: mongoose.Schema.Types.ObjectId },
-  problem: { type: mongoose.Schema.Types.ObjectId },
+  deckId: { type: mongoose.Schema.Types.ObjectId },
+  problemId: { type: mongoose.Schema.Types.ObjectId },
   dueDate: { type: Number },
 });
 

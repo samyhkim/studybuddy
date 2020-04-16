@@ -1,3 +1,4 @@
+const chalk = require("chalk");
 const SRM = require("../../config/algo");
 const {
   addProblemToReview,
@@ -15,11 +16,11 @@ const rateHandler = async (deck, problem, answer) => {
 
   if (problemInReview) {
     await updateProblemDueDate(deck._id, problem._id, newInfo.dueDate)
-      .then(() => console.log("Review updated."))
+      .then(() => console.log(chalk.green("Review updated.")))
       .catch((err) => console.log(err));
   } else {
     await addProblemToReview(deck._id, problem._id, newInfo.dueDate)
-      .then(() => console.log("Added to review."))
+      .then(() => console.log(chalk.green("Added to review.")))
       .catch((err) => console.log(err));
   }
 
